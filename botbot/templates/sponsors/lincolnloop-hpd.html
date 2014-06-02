@@ -1,0 +1,76 @@
+<style type="text/css">
+/*
+ * Common
+ */
+.hpd {
+  display: block;
+  padding: 14px;
+  box-sizing: border-box;
+  border-radius: 2px;
+  background: #3cadce;
+  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/18946/engine-flipped_3.jpg");
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 20px;
+  text-align: center;
+  text-decoration: none !important;
+  color: white !important;
+}
+
+.hpd .hpd-title {
+  margin: 0;
+  font-size: 21px;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.hpd .hpd-desc {
+  margin: 10px 0;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.45;
+}
+
+.hpd-btn {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 2px;
+  background: #255571;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+  transition: background .5s ease;
+}
+.hpd:hover .hpd-btn {
+  background: #2bde73;
+}
+
+/*
+ * Small, not responsive
+ * Could be the smallest size but *too* small?
+ */
+.hpd-small {
+  max-width: 180px;
+  padding: 0;
+  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/18946/hpd-faded-wing_1.jpg");
+}
+.hpd-small .hpd-body {
+  padding: 14px;
+}
+.hpd-small .hpd-title {
+  font-size: 20px;
+}
+.hpd-small .hpd-btn {
+  display: block;
+  padding: 10px 0;
+  border-radius: 0 0 2px 2px;
+  font-size: 13px;
+}
+</style>
+<a href="https://www.kickstarter.com/projects/1704706557/high-performance-django" class="hpd hpd-small partner">
+  <div class="hpd-body">
+    <h4 class="hpd-title">High Performance Django</h4>
+    <p class="hpd-desc">The ebook on how to build and deploy fast, scalable Django sites!</p>
+  </div>
+  <span href="#" class="hpd-btn">View <span class="hpd-kickstarter">Kickstarter</span> &#8594;</span>
+</a>

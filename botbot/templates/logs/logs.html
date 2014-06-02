@@ -89,6 +89,14 @@
         {% endif %}
       </div>
       {% endblock content %}
+        {% if channel.name == '#BBMETest' %}
+          <div class="spr-box">
+            {% include "sponsors/lincolnloop-hpd.html" %}
+          </div>
+        {% endif %}
+      {% block ad_slot %}
+
+      {% endblock %}
     </div>
     {# not visible to end-user, but used to determine/post timezone #}
     <form id="Timezone" method="post" action="{% url '_set_timezone' %}">{% csrf_token %}{{ tz_form.timezone }}</form>

@@ -4172,7 +4172,7 @@ body.log-view .misc-links {
 #Log-Container .timeline-navigation {
   width: 180px;
   position: fixed;
-  right: 0;
+  right: 50px;
   top: 140px;
 }
 #Log-Container .timeline-navigation > ul {
@@ -4180,7 +4180,7 @@ body.log-view .misc-links {
 }
 #Log-Container article {
   border: 1px solid #eee;
-  margin-right: 160px;
+  margin-right: 220px;
 }
 #Log-Prep-Prev,
 #Log-Prep-Next {
@@ -4295,6 +4295,27 @@ body.log-view .misc-links {
   display: block;
   margin: 4px 0 0;
 }
+/* Sponsor Box */
+.spr-box {
+  position: fixed;
+  right: 25px;
+  bottom: 50px;
+  padding: 4px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+.spr-box:after {
+  position: fixed;
+  right: 25px;
+  bottom: 26px;
+  display: block;
+  padding: 1px 6px;
+  background: #eee;
+  content: "Sponsor ❤";
+  color: #999;
+  text-transform: uppercase;
+  font-size: 11px;
+}
 /*
     Small Log Styles
 */
@@ -4311,7 +4332,7 @@ body.log-view .misc-links {
 #Site-Footer {
   *zoom: 1;
   padding: 0 20px 4px;
-  margin-right: 160px;
+  margin-right: 220px;
   margin-top: 40px;
 }
 #Site-Footer:before,
