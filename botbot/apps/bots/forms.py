@@ -63,6 +63,9 @@ class ChannelRequestForm(forms.Form):
         requires a link to the logs in the channel topic.
     """))
 
+    description = forms.CharField(label="What is this channel for?",
+                                  widget=forms.Textarea, required=True)
+
     def __init__(self, *args, **kwargs):
         super(ChannelRequestForm, self).__init__(*args, **kwargs)
         self._set_server_choices()
@@ -78,6 +81,9 @@ class ChannelRequestForm(forms.Form):
         if models.Channel.objects.filter(name=channel_name).exists():
             raise forms.ValidationError(
                 "Sorry, this channel is already being monitored.")
+
+        if not channel_name.startswith("#"):
+            channel_name = "#" + channel_name
 
         return channel_name
 
