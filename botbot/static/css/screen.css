@@ -4295,27 +4295,6 @@ body.log-view .misc-links {
   display: block;
   margin: 4px 0 0;
 }
-/* Sponsor Box */
-.spr-box {
-  position: fixed;
-  right: 25px;
-  bottom: 50px;
-  padding: 4px;
-  border: 1px solid #eee;
-  background: #fff;
-}
-.spr-box:after {
-  position: fixed;
-  right: 25px;
-  bottom: 26px;
-  display: block;
-  padding: 1px 6px;
-  background: #eee;
-  content: "Sponsor ❤";
-  color: #999;
-  text-transform: uppercase;
-  font-size: 11px;
-}
 /*
     Small Log Styles
 */

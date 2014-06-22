@@ -17,6 +17,14 @@
           <h4 class="date"></h4>
         </div>
 
+        {% block ad_slot %}
+          {% if channel.name == '#BBMETest' %}
+          <div class="spr-box">
+            {% include "sponsors/lincolnloop-hpd.html" %}
+          </div>
+          {% endif %}
+        {% endblock %}
+
         <nav class="mobile-nav">
           {# <a href="#Search" class="nav-toggle"><i class="icon-search icon-large"></i></a> #}
           <a href="#Log-Nav" class="nav-toggle"><i class="icon-calendar icon-large"></i></a>
@@ -89,14 +97,8 @@
         {% endif %}
       </div>
       {% endblock content %}
-        {% if channel.name == '#BBMETest' %}
-          <div class="spr-box">
-            {% include "sponsors/lincolnloop-hpd.html" %}
-          </div>
-        {% endif %}
-      {% block ad_slot %}
+      
 
-      {% endblock %}
     </div>
     {# not visible to end-user, but used to determine/post timezone #}
     <form id="Timezone" method="post" action="{% url '_set_timezone' %}">{% csrf_token %}{{ tz_form.timezone }}</form>
