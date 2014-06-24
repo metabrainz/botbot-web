@@ -2,69 +2,64 @@
 /*
  * Common
  */
-.ad {
-  position: absolute;
-  display: inline-block;
-  top: 4px;
-  left: 370px;
-  font-size: 16px;
-  color: white;
-  font-family: "Helvetica Neue", Helvetica, sans-serif;
-  border: 2px solid white;
-  border-radius: 3px;
-  background-color: #3cadcf;
-  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/18946/engine-flipped_3.jpg");
-  background-size: 50%;
-  background-position: 40px -30px;
-  background-repeat: no-repeat;
-  text-align: center;
-  line-height: 24px;
-  width: 400px;
-  height: 60px;
-}
-
-.ad .title {
-  display: inline-block;
-  padding-top: 6px;
-  font-size: 14px;
-  text-transform: uppercase;
-  font-style: italic;
-  font-weight: bold;
-}
-
-.buy {
-  float: right;
-  padding: 0 35px;
-  background: #255571;
-  border-radius: 0 3px 3px 0;
-  line-height: 60px;
-  text-transform: uppercase;
-  transition: background 500ms ease;
-}
-
-.tag {
-  font-size: 14px;
-}
-
-.ad:hover .buy {
-  background: #2bde73;
-}
-
-.ad-link {
+.spr-link-4 {
   text-decoration: none;
 }
 
-@media (max-width: 1100px) {
-  .ad-link {
+.spr-4 {
+  position: absolute;
+  display: inline-block;
+  margin: -5px 0 0 10px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  text-align: center;
+  width: 400px;
+}
+
+.title-4 {
+  margin-left: -40px;
+  font-style: italic;
+  color: #255571;
+  font-weight: bold;
+}
+
+.get-4 {
+  float: right;
+  padding: 4px 8px;
+  margin: -15px 0 0 -33px;
+  text-transform: uppercase;
+  border: 1px solid #0088cc;
+  color: #0088cc;
+  border-radius: 2px;
+}
+
+.tag-4 {
+  margin-left: 30px;
+  font-size: 13px;
+  color: #333333;
+}
+
+.spr-4:hover .get-4 {
+  background: #2bde73;
+  color: white;
+  border: 1px solid #2bde73;
+}
+
+.spr-link-4:active {
+  color: currentColor;
+  text-decoration: none;
+}
+
+@media (max-width: 1050px) {
+  .spr-4 {
     display: none;
   }
 }
 </style>
 
-<a class="ad-link" href="https://www.kickstarter.com/projects/1704706557/high-performance-django">
-  <div class="ad">
-    <span class="title">High Performance Django</span>
-    <span class="buy">Buy ebook</span>
-    <span class="tag">Build fast, scalable Django sites.</span>
+<a class="spr-link-4" href="https://www.kickstarter.com/projects/1704706557/high-performance-django">
+  <div class="spr-4">
+    <span class="title-4">High Performance Django</span><br>
+    <span class="tag-4">Build fast, scalable Django sites.</span>
+    <span class="get-4">Get ebook</span>
   </div>
-<a>
+</a>
