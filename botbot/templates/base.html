@@ -1,25 +1,25 @@
-{% load assets %}<!DOCTYPE html>
+{% load assets %}<!doctype html>
 
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="utf-8">
+    <title>{% block head_title %} | BotBot.me{% endblock %}</title>
 
-    <title>{% block head_title %} | BotBot.me [o__o]{% endblock %}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="BotBot.me provides beautiful IRC logging">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
 
-    
+    <link href="//www.google-analytics.com" rel="dns-prefetch">
+    <link href="//ajax.googleapis.com" rel="dns-prefetch">
+
+    <!-- Supportive Fonts -->
+    <link href="http://fonts.googleapis.com/css?family=Roboto:900,400,700,400italic,500,500italic,300,700italic,100&subset=latin,cyrillic-ext,latin-ext,cyrillic,greek-ext,greek,vietnamese" rel="stylesheet" type="text/css">
+
     {% assets filters="yui_css", output="gen/screen.css", "css/screen.css" %}
     <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}" />
     {% endassets %}
-    <!-- Font Awesome - http://fortawesome.github.com/Font-Awesome -->
 
-    <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link href='//fonts.googleapis.com/css?family=Droid+Serif:400,700,700italic,400italic' rel='stylesheet' type='text/css'>
-
-    <!--[if lt IE 9]>
-        <link rel="stylesheet" type="text/css" href="ie-no-support.css" />
-    <![endif]-->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico" />
 
@@ -54,8 +54,6 @@
     </div>
 </header>
 {% endblock %}
-
-{% include "includes/ie-no-support.html" %}
 
 {% if messages %}
     <ul class="messages">
