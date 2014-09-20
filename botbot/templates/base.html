@@ -3,7 +3,7 @@
 <html lang="en" class="no-js">
 <head>
     <meta charset="utf-8">
-    <title>{% block head_title %} | BotBot.me{% endblock %}</title>
+    <title>{% block head_title %}{% endblock head_title %} | BotBot.me</title>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="BotBot.me provides beautiful IRC logging">
@@ -28,44 +28,12 @@
 <body class="{% block body_class %}{% endblock %}">
 
 <div class="container">
-
-<header class="site-header">
-{% block header %}
-  <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}/{% endif %}">
-    <img
-      src="{{ STATIC_URL }}img/logo.svg"
-      alt="The logo for BotBot.me features a friendly robot." />
-  </a>
-
-              <a href="{% url 'dashboard' %}">All Channels</a></li>
-  <nav role="navigation">
-   {% if user.is_authenticated %}
-        <a href="{% url 'account_manage' %}">My Account</a>
-        <a href="{% url 'account_logout' %}">Log Out</a>
-    {% else %}
-        <a href="{% url 'account_login' %}">Log In</a>
-    {% endif %}
-  </nav>
-{% endblock header %}
-</header>
-
-{% if messages %}
-<div class="site-alerts">
-  <ul class="site-alerts-list">
-    {% for message in messages %}
-    <li{% if message.tags %} class="site-alert site-alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-  </ul>
-</div>
-{% endif %}
-
 {% block content_outer %}
-<div id="Content" class="container-fluid">
+<main class="main" role="main">
     {% block content %}{% endblock %}
-</div>
+</main>
 {% endblock %}
-
-{% include "includes/footer.html" %}
+</div>
 
 {% assets filters="yui_js", output="gen/vendor.js", "js/vendor/andlog.js", "js/vendor/jquery-1.8.2.js", "js/vendor/bootstrap.js", "js/vendor/moment.js", "js/vendor/detect_timezone.js", "js/vendor/jquery.highlight.js", "js/vendor/waypoints.js", "js/vendor/underscore.js", "js/vendor/backbone.js" %}
     <script src="{{ ASSET_URL }}"></script>
