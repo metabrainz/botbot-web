@@ -7,3 +7,4 @@ settings_debug.py
 .DS_Store
 node_modules/
 dump.rdb
+botbot/static/css/screen*

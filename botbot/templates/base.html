@@ -15,7 +15,7 @@
     <!-- Supportive Fonts -->
     <link href="http://fonts.googleapis.com/css?family=Roboto:900,400,700,400italic,500,500italic,300,700italic,100&subset=latin,cyrillic-ext,latin-ext,cyrillic,greek-ext,greek,vietnamese" rel="stylesheet" type="text/css">
 
-    {% assets filters="yui_css", output="gen/screen.css", "css/screen.css" %}
+    {% assets filters="yui_css", output="gen/screen.min.css", "css/screen.min.css" %}
     <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}" />
     {% endassets %}
 
@@ -27,40 +27,36 @@
 </head>
 <body class="{% block body_class %}{% endblock %}">
 
+<div class="container">
+
+<header class="site-header">
 {% block header %}
-<header id="Site-Header" class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container-fluid">
-            <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}/{% endif %}" class="brand-btn wiggler">
-                <object data="{{ STATIC_URL }}img/logo.svg" type="image/svg+xml" id="Logo"></object>
-            </a>
-            <nav id="Primary-Nav"
-                <ul class="nav">
-                    <li><a href="{% url 'dashboard' %}">All Channels</a></li>
-                </ul>
-            </nav>
-            <nav id="User-Nav">
-                {# <a href="/help/" class="btn btn-info pull-right">Help</a> #}
-                <ul class="nav pull-right">
-                   {% if user.is_authenticated %}
-                        <li><a href="{% url 'account_manage' %}">Settings</a></li>
-                        <li><a href="{% url 'account_logout' %}">Logout</a></li>
-                    {% else %}
-                        <li><a href="{% url 'account_login' %}">Login</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
-    </div>
+  <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}/{% endif %}">
+    <img
+      src="{{ STATIC_URL }}img/logo.svg"
+      alt="The logo for BotBot.me features a friendly robot." />
+  </a>
+
+              <a href="{% url 'dashboard' %}">All Channels</a></li>
+  <nav role="navigation">
+   {% if user.is_authenticated %}
+        <a href="{% url 'account_manage' %}">My Account</a>
+        <a href="{% url 'account_logout' %}">Log Out</a>
+    {% else %}
+        <a href="{% url 'account_login' %}">Log In</a>
+    {% endif %}
+  </nav>
+{% endblock header %}
 </header>
-{% endblock %}
 
 {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
+<div class="site-alerts">
+  <ul class="site-alerts-list">
+    {% for message in messages %}
+    <li{% if message.tags %} class="site-alert site-alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+</div>
 {% endif %}
 
 {% block content_outer %}
