@@ -8,7 +8,7 @@ dj-database-url==0.2.2
 # TODO (yml): Remove hstore when we squash the migration
 django-hstore==1.2.5
 # django-statsd-mozilla==0.3.12
-git+https://github.com/vbabiy/django-statsd.git@request-aggregation
+-e git+https://github.com/vbabiy/django-statsd.git@request-aggregation#egg=django-statsd
 
 markdown==2.3.1
 redis==2.9.1
