@@ -7,7 +7,8 @@ cache:
     - $HOME/virtualenv
 sudo: false
 install:
-  - "pip install -e . -r requirements.txt"
+  - "pip install pipenv"
+  - "pipenv install"
 services:
   - postgresql
   - redis-server
