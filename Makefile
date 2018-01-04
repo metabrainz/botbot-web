@@ -2,6 +2,8 @@
 
 ### Default Configuration.  Override in a make.config file
 
+VIRTUAL_ENV = $(pipenv --venv)
+
 # the path to the lib folder in the venv
 LOCAL_LIB=$(VIRTUAL_ENV)/lib
 
@@ -14,6 +16,7 @@ LOCAL_SRC=$(VIRTUAL_ENV)/src
 # where misc files are stored
 LOCAL_VAR=$(VIRTUAL_ENV)/var
 
+# This doesn't seem to work in venvs and will always result in Node.js being downloaded and compiled.
 NPM_BIN := $(or $(shell command -v npm),$(LOCAL_BIN)/npm)
 LESS_BIN := $(or $(shell command -v lessc),$(LOCAL_BIN)/lessc)
 JSHINT_BIN := $(or $(shell command -v jshint),$(LOCAL_BIN)/jshint)
@@ -22,12 +25,6 @@ WATCHMEDO_BIN := $(or $(shell command -v watchmedo),$(LOCAL_BIN)/watchmedo)
 # allows a file make.config to override the above variables
 -include make.config
 
-### PIP
-.pip-timestamp: requirements.txt
-	pip install -r requirements.txt
-	touch .pip-timestamp
-
-pip-install: .pip-timestamp
 
 $(LOCAL_BIN)/sphinx-build:
 	pip install Sphinx
@@ -83,13 +80,11 @@ jshint:
 
 ### Local Settings
 
-.env:
-	cp .env.example $@
-
-local-settings: .env
+local-settings:
+	cp .env.example .env
 
 ### General Tasks
-dependencies: less-install pip-install local-settings $(LOCAL_BIN)/brainzbot-bot
+dependencies: local-settings less-install $(LOCAL_BIN)/brainzbot-bot
 
 $(LOCAL_VAR)/GeoLite2-City.mmdb:
 	curl http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz | gunzip -c > $@
@@ -102,4 +97,4 @@ run: dependencies
 docs: $(LOCAL_BIN)/sphinx-build
 	cd docs && make html
 
-.PHONY: clean-pyc run pip-install less-install jshint-install dependencies local-settings docs geoip-db
+.PHONY: clean-pyc run less-install jshint-install dependencies local-settings docs geoip-db

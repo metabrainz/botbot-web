@@ -1,5 +1,5 @@
 ==================
-Installation
+Development setup
 ==================
 
 Pre-requisites
@@ -11,16 +11,7 @@ Python
 ~~~~~~~
 
 * Python 2.7
-
-Postgresql with hStore extension
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* **OS X**:
-
-  * Homebrew: installed by default
-  * Postgres.app: installed by default
-
-* **Ubuntu**: ``apt-get install postgresql-contrib-9.1 postgresql-server-dev-9.1 python-dev virtualenv``
+* Pipenv (To install pipenv for your user, run ``pip install --user pipenv``.)
 
 Go
 ~~
@@ -30,11 +21,11 @@ Version 1.2 or higher required
 * **OS X**: ``brew install go``
 * **Ubuntu**: ``apt-get install golang-go``
 
-Redis
-~~~~~
+PostgreSQL and Redis
+~~~~~~~~~~~~~~~~~~~~
 
-* **OS X**: ``brew install redis``
-* **Ubuntu**: ``apt-get install redis-server``
+We recommend you use Docker containers for development. You can however also install and run
+PostgreSQL and Redis manually using your operating system's package manager.
 
 Install
 --------
@@ -43,33 +34,43 @@ Run in a terminal:
 
 .. code-block:: bash
 
-    virtualenv brainzbot && source brainzbot/bin/activate
-    pip install -e git+https://github.com/metabrainz/brainzbot-core.git#egg=brainzbot-core
-    cd $VIRTUAL_ENV/src/brainzbot-core
+    # Clone the repository, if you're planning to contribute, clone your fork instead.
+    git clone https://github.com/metabrainz/brainzbot-core.git && cd brainzbot-core
 
-    # This builds the project environment and will run for at least several minutes
+    # Install the python dependencies.
+    pipenv --two install
+
+    # This builds the project environment and will run for at least several minutes.
     make dependencies
+
+    # Meanwhile you can download and run docker containers for redis and postgres.
+    # Skip this step if you have already manually set up those services.
+    docker run --name brainzbot_redis -d -p 6379:6379 redis
+    docker run --name brainzbot_postgres -e POSTGRES_PASSWORD=brainzzz -d -p 5432:5432 postgres
 
     # Adjust ``.env`` file if necessary. Defaults are chosen for local debug environments.
     # If your Postgres server requires a password, you'll need to override STORAGE_URL
     # The default database name is 'brainzbot'
     $EDITOR .env
 
-    # Make the variables available to subprocesses
-    export $(cat .env | grep -v ^# | xargs)
+    # Enter the virtualenv and load the .env variables.
+    pipenv shell
 
-    createdb brainzbot
-    echo "create extension hstore" | psql brainzbot
-    manage.py migrate
+    # Connect to the postgres database inside the docker container.
+    # If you're using a manual installation of postgres instead,
+    # you may need to use sudo to run psql as the postgres user.
+    docker exec -it brainzbot-postgres psql -U postgres
 
-    # You'll need a staff account for creating a bot and registering channels
-    manage.py createsuperuser
+    # Set up the database.
+    CREATE DATABASE brainzbot;
+    \c brainzbot
+    CREATE EXTENSION hstore;
+    \q
 
-Redis needs to be running prior to starting the BotBot services. For example:
+    ./manage.py migrate
 
-.. code-block:: bash
-
-    redis-server
+    # You'll need a staff account for creating a bot and registering channels.
+    ./manage.py createsuperuser
 
 Then, to run all the services defined in ``Procfile``:
 
@@ -85,7 +86,14 @@ See :doc:`getting_started` for instructions on configuring a bot.
 
 If you plan make code changes, please read through the :doc:`developers` doc.
 
-If you plan to run BotBot in a production environment please read the :doc:`production` doc.
+If you plan to run BrainzBot in a production environment please read the :doc:`production` doc.
+
+To start the docker containers again at a later time run:
+
+.. code-block:: bash
+
+    docker start $(docker ps -aqf "name=brainzbot_redis")
+    docker start $(docker ps -aqf "name=brainzbot_postgres")
 
 
 Running Tests
@@ -95,7 +103,7 @@ The tests can currently be run with the following command:
 
 .. code-block:: bash
 
-    manage.py test accounts bots logs plugins
+    ./manage.py test accounts bots logs plugins
 
 
 Building Documentation

@@ -12,6 +12,7 @@ Contents:
    developers
    plugins
    irc_resources
+   production
    troubleshooting
 
 Indices and tables

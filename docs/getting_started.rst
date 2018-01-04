@@ -11,13 +11,7 @@ Add a new Bot
 A bot acts as an IRC client. It connects to one or more IRC servers and joins one or more channels per server.
 
 1. Go to ``http://localhost:8000/admin/bots/chatbot/add/``
-
-2. Log in with your username. If you didn’t create a superuser during installation, you can create one via:
-
-.. code-block:: bash
-
-    manage.py createsuperuser
-
+2. Log in as your superuser.
 3. Select **'Is active'**
 4. **Server:** ``chat.freenode.net:6667``
 5. **Nick:** You'll need to create a unique nick for your bot.
