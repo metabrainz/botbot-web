@@ -32,6 +32,10 @@ class Plugin(BasePlugin):
 
     I keep extensive logs on all the activity in `{{ channel.name }}`.
     You can read and search them at {{ SITE }}{{ channel.get_absolute_url }}.
+
+    To temporarily turn of logging, run
+
+        {{ command_prefix }}off
     """
     config_class = Config
 
@@ -39,7 +43,7 @@ class Plugin(BasePlugin):
         """Log a message to the database"""
         # If the channel does not start with "#" that means the message
         # is part of a /query
-        if line._channel_name.startswith("#"):
+        if line._channel_name.startswith("#") and not self.retrieve("off"):
             ignore_prefixes = self.config['ignore_prefixes']
 
             if ignore_prefixes:
@@ -65,3 +69,10 @@ class Plugin(BasePlugin):
                     raw=line._raw)
 
     logit.route_rule = ('firehose', ur'(.*)')
+
+    @listens_to_command("off")
+    def off(self, line):
+        if self.retrieve("off"):
+            self.delete("off")
+        else:
+            self.store("off", "")
