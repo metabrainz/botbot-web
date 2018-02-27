@@ -1,0 +1,13 @@
+[Unit]
+Description=BrainzBot Plugins
+Documentation=https://brainzbot.readthedocs.io/en/latest/
+Wants=botbot-bot.service
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/brainzbot
+EnvironmentFile=./.env
+ExecStart=pythom ./brainzbot-core/bin/manage.py
+
+[Install]
+WantedBy=multi-user.target

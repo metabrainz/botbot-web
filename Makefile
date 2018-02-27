@@ -4,14 +4,8 @@
 
 VIRTUAL_ENV = $(pipenv --venv)
 
-# the path to the lib folder in the venv
-LOCAL_LIB=$(VIRTUAL_ENV)/lib
-
 # where executables are stored
 LOCAL_BIN=$(VIRTUAL_ENV)/bin
-
-# where source files are stored
-LOCAL_SRC=$(VIRTUAL_ENV)/src
 
 # where misc files are stored
 LOCAL_VAR=$(VIRTUAL_ENV)/var
@@ -38,21 +32,17 @@ clean-pyc:
 ### GO SUPPORT
 
 $(LOCAL_BIN)/brainzbot-bot:
-	GOPATH=$(VIRTUAL_ENV) go get github.com/metabrainz/brainzbot-bot
+	go get github.com/metabrainz/brainzbot-bot
 
 test-bot:
-	GOPATH=$(VIRTUAL_ENV) go test github.com/metabrainz/brainzbot-bot
+	go test github.com/metabrainz/brainzbot-bot
 
 ### LOCAL LESS SUPPORT
 $(NPM_BIN):
-	@echo "Installing node.js..."
-	cd $(VIRTUAL_ENV) && mkdir -p "src"
-	cd $(LOCAL_LIB) && curl http://nodejs.org/dist/node-latest.tar.gz | tar xvz
-	cd $(LOCAL_LIB)/node-v* && ./configure --prefix=$(VIRTUAL_ENV) && make install
-	@echo "Installed npm"
+	$(error Couldn't find npm, please install Node.js and npm.)
 
 $(LESS_BIN): $(NPM_BIN)
-	NPM_CONFIG_PREFIX=$(VIRTUAL_ENV) npm install "less@<1.4" -g
+	npm install "less@<1.4" -g
 
 less-install: $(LESS_BIN)
 
@@ -71,7 +61,7 @@ less-watch: $(WATCHMEDO_BIN)
 ### Local JSHint
 
 $(JSHINT_BIN): $(NPM_BIN)
-	NPM_CONFIG_PREFIX=$(VIRTUAL_ENV) npm install jshint -g
+	npm install jshint -g
 
 jshint-install: $(JSHINT_BIN)
 
