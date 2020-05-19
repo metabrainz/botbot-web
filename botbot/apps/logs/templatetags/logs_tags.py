@@ -104,8 +104,8 @@ def embed_image(url):
             image_id = match.group('image_id')
 
             src = urlunparse((
-            url.scheme, url.hostname, "/{}/content".format(image_id),
-            url.params, url.query, url.fragment))
+                url.scheme, url.hostname, f"/{image_id}/content",
+                url.params, url.query, url.fragment))
             return urlunparse(url), src
 
     return urlunparse(url), urlunparse(url)
@@ -127,7 +127,7 @@ def build_html_attrs(html_attrs):
         if not value:
             continue
 
-        result += ' {0}="{1}"'.format(key, value)
+        result += f' {key}="{value}"'
 
     return result
 
@@ -141,7 +141,7 @@ def embed_youtube(url):
     video_id = parse_qs(url.query)['v'][0]
 
     return urlunparse(
-        url), "//www.youtube.com/embed/{id}".format(id=video_id)
+        url), f"//www.youtube.com/embed/{video_id}"
 
 
 def urlize_impl(text, trim_url_limit=None, nofollow=False, autoescape=False):
@@ -222,8 +222,7 @@ def urlize_impl(text, trim_url_limit=None, nofollow=False, autoescape=False):
                         html_attrs['href'] = urlunparse(url)
 
                     trimmed = trim_url(middle)
-                    middle = "<a{attrs}>{text}</a>".format(
-                        attrs=build_html_attrs(html_attrs), text=trimmed)
+                    middle = f"<a{build_html_attrs(html_attrs)}>{trimmed}</a>"
 
                     words[i] = mark_safe('%s%s%s' % (lead, middle, trail))
                 else:

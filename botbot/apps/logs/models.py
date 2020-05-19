@@ -85,13 +85,13 @@ class Log(models.Model):
         if self.command == "PRIVMSG":
             text = ''
             if self.nick:
-                text += '{0}: '.format(self.nick)
+                text += f'{self.nick}: '
             text += self.text[:20]
         else:
             try:
                 text = MSG_TMPL[self.command].format(nick=self.nick, text=self.text)
             except KeyError:
-                text = "{}: {}".format(self.command, self.text)
+                text = f"{self.command}: {self.text}"
 
         return text
 

@@ -24,8 +24,7 @@ class RealPluginMixin(object):
 
     def unique_key(self, key):
         """A unique key for the chatbot, channel, plugin, key combination"""
-        return '{0}:{1}:{2}:{3}'.format(self.chatbot_id, self.channel_id,
-                                         self.slug, key.strip())
+        return f'{self.chatbot_id}:{self.channel_id}:{self.slug}:{key.strip()}'
 
     def store(self, key, value):
         """Saves a key,value to Redis"""
@@ -64,7 +63,5 @@ class RealPluginMixin(object):
                 lines = msg.split('\n')
             for response_line in lines:
                 LOG.info('Write to %s: %s', nick, response_line)
-                response_cmd = 'WRITE {0} {1} {2}'.format(self.chatbot_id,
-                                                          nick,
-                                                          response_line)
+                response_cmd = f'WRITE {self.chatbot_id} {nick} {response_line}'
                 self.app.bot_bus.lpush('bot', response_cmd)

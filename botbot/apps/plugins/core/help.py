@@ -23,8 +23,7 @@ class Plugin(BasePlugin):
     def respond_to_help(self, line):
         plugins = [plgn.slug for plgn in line._channel.plugins.all()]
         help_url = get_help_url(line._channel)
-        return 'Available plugins: {0} ({1})'.format(', '.join(plugins),
-                                                      help_url)
+        return f'Available plugins: {", ".join(plugins)} ({help_url})'
 
     @listens_to_mentions(r'^help (?P<command>.*)')
     def respond_to_plugin_help(self, line, command):
@@ -35,7 +34,7 @@ class Plugin(BasePlugin):
             help_url = get_help_url(line._channel)
             response = [
                 plugin.user_docs.strip().split('\n')[0],
-                'More details: {0}#{1}'.format(help_url, command)
+                f'More details: {help_url}#{command}'
             ]
             return '\n'.join(response)
         except IndexError:

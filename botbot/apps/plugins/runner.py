@@ -59,7 +59,7 @@ class Line(object):
     def _chatbot(self):
         """Simple caching for ChatBot model"""
         if not hasattr(self, '_chatbot_cache'):
-            cache_key = 'chatbot:{0}'.format(self._chatbot_id)
+            cache_key = f'chatbot:{self._chatbot_id}'
             chatbot = cache.get(cache_key)
             if not chatbot:
                 try:
@@ -77,7 +77,7 @@ class Line(object):
     def _channel(self):
         """Simple caching for Channel model"""
         if not hasattr(self, '_channel_cache'):
-            cache_key = 'channel:{0}-{1}'.format(self._chatbot_id, self._channel_name)
+            cache_key = f'channel:{self._chatbot_id}-{self._channel_name}'
             channel = cache.get(cache_key)
 
             if not channel and self._channel_name.startswith("#"):
@@ -131,10 +131,10 @@ class Line(object):
 
         if len(nick) == 1:
             # support @<plugin> or !<plugin>
-            regex = r'^{0}(.*)'.format(re.escape(nick))
+            regex = fr'^{re.escape(nick)}(.*)'
         else:
             # support <nick>: <plugin>
-            regex = r'^{0}[:\s](.*)'.format(re.escape(nick))
+            regex = fr'^{re.escape(nick)}[:\s](.*)'
         match = re.match(regex, self.full_text, re.IGNORECASE)
         if match:
             LOG.debug('Direct message detected')
@@ -182,7 +182,7 @@ class PluginRunner(object):
     def register_all_plugins(self):
         """Iterate over all plugins and register them with the app"""
         for core_plugin in ['help', 'logger']:
-            mod = import_module('botbot.apps.plugins.core.{}'.format(core_plugin))
+            mod = import_module(f'botbot.apps.plugins.core.{core_plugin}')
             plugin = mod.Plugin()
             self.register(plugin)
         for mod in botbot_plugins.plugins.__all__:

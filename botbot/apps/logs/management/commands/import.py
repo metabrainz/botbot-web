@@ -38,7 +38,7 @@ def _get_channel(channel_name):
     try:
         return Channel.objects.get(name=channel_name)
     except Channel.DoesNotExist:
-        raise CommandError('Channel {} not found.'.format(channel_name))
+        raise CommandError(f'Channel {channel_name} not found.')
 
 
 def _path(directory, filenames):
@@ -110,7 +110,7 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def _import_file(self, path):
-        print("Importing {}".format(path))
+        print(f"Importing {path}")
         date = os.path.splitext(os.path.basename(path))[0]
         with open(path, 'r') as f:
             for line in f:
@@ -120,12 +120,12 @@ class Command(BaseCommand):
     def _import_line(self, date, line):
         date_match = self.date_regex.match(line)
         if date_match is None:
-            raise CommandError('Bad line format - no date: {}'.format(line))
+            raise CommandError(f'Bad line format - no date: {line}')
         line = line[date_match.end():].strip()
 
         user_match = self.user_regex.match(line)
         if user_match is None:
-            raise CommandError('Bad line format - no user: {}'.format(line))
+            raise CommandError(f'Bad line format - no user: {line}')
 
         content = line[user_match.end():].strip()
 
@@ -161,30 +161,28 @@ class Command(BaseCommand):
             existing_entries[0].save()
 
     def _parse_message(self, nick, content):
-        if content.startswith("{} has joined {}".format(nick,
-                                                        self.channel.name)):
+        if content.startswith(f"{nick} has joined {self.channel.name}"):
             # JOIN
             return {
                 'room': self.channel.name,
                 'command': 'JOIN',
                 'text': ''
             }
-        elif content.startswith("{} has left {}".format(nick,
-                                                        self.channel.name)):
+        elif content.startswith(f"{nick} has left {self.channel.name}"):
             # PART
             return {
                 'room': self.channel.name,
                 'command': 'PART',
                 'text': ''
             }
-        elif content.startswith("{} has quit".format(nick)):
+        elif content.startswith(f"{nick} has quit"):
             # QUIT
             return {
                 'room': self.channel.name,
                 'command': 'QUIT',
                 'text': ''
             }
-        elif content.startswith("* {} ".format(nick)):
+        elif content.startswith(f"* {nick} "):
             # ACTION
             nick_length = len(nick) + 3
             return {

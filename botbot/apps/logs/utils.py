@@ -18,7 +18,7 @@ except:
 
 
 def ip_lookup(ip):
-    cache_key = 'location:{}'.format(ip)
+    cache_key = f'location:{ip}'
     coords = cache.get(cache_key)
     if not coords:
         try:

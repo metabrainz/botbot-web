@@ -51,7 +51,7 @@ class PaginatorPageLinksMixin(object):
         else:
             params['page'] = page.next_page_number()
 
-        return '{0}?{1}'.format(url, params.urlencode())
+        return f'{url}?{params.urlencode()}'
 
     def get_previous_page_link(self, page):
         url = self.request.path
@@ -62,13 +62,13 @@ class PaginatorPageLinksMixin(object):
         else:
             params['page'] = page.previous_page_number()
 
-        return '{0}?{1}'.format(url, params.urlencode())
+        return f'{url}?{params.urlencode()}'
 
     def get_current_page_link(self, page):
         url = self.request.path
         params = self.request.GET.copy()
         params['page'] = page.number
-        return '{0}?{1}'.format(url, params.urlencode())
+        return f'{url}?{params.urlencode()}'
 
 
 class LogDateMixin(object):
@@ -136,8 +136,7 @@ class LogDateMixin(object):
 class LogStream(ChannelMixin, View):
     def get(self, request, channel_slug, bot_slug):
         response = HttpResponse()
-        response['X-Accel-Redirect'] = '/internal-channel-stream/{}'.format(
-            self.channel.pk)
+        response['X-Accel-Redirect'] = f'/internal-channel-stream/{self.channel.pk}'
         if 'HTTP_LAST_EVENT_ID' in request.META:
             response['Last-Event-ID'] = request.META['HTTP_LAST_EVENT_ID']
         return response
@@ -266,11 +265,11 @@ class LogViewer(ChannelMixin, object):
             # Official SEO header
             links = []
             if self.next_page:
-                links.append('{0}; rel="next"'.format(self.next_page))
+                links.append(f'{self.next_page}; rel="next"')
                 has_next_page = True
 
             if self.prev_page:
-                links.append('{0}; rel="prev"'.format(self.prev_page))
+                links.append(f'{self.prev_page}; rel="prev"')
             response['Link'] = ','.join(links)
         else:
             # No HTML, pass page info in easily parseable headers
@@ -384,7 +383,7 @@ class DayLogViewer(PaginatorPageLinksMixin, LogDateMixin, LogViewer, ListView):
         else:
             params['page'] = page.previous_page_number()
 
-        return '{0}?{1}'.format(url, params.urlencode())
+        return f'{url}?{params.urlencode()}'
 
     def get_next_page_link(self, page):
         """
@@ -405,7 +404,7 @@ class DayLogViewer(PaginatorPageLinksMixin, LogDateMixin, LogViewer, ListView):
         else:
             params['page'] = page.next_page_number()
 
-        return '{0}?{1}'.format(url, params.urlencode())
+        return f'{url}?{params.urlencode()}'
 
     def get_current_page_link(self, page):
         # copy, to maintain any params that came in to original request.
@@ -413,7 +412,7 @@ class DayLogViewer(PaginatorPageLinksMixin, LogDateMixin, LogViewer, ListView):
         date = _utc_now()
         url = self.channel_date_url(date)
         params['page'] = page.number
-        return '{0}?{1}'.format(url, params.urlencode())
+        return f'{url}?{params.urlencode()}'
 
     @cached_property
     def request_timezone(self):
@@ -508,7 +507,7 @@ class SingleLogViewer(DayLogViewer):
 
     def _permalink_to_log(self, log):
         """Scan pages for a single log. Return to permalink to page"""
-        cache_key = "line:{}:permalink".format(log.pk)
+        cache_key = f"line:{log.pk}:permalink"
         url, params = cache.get(cache_key, [None, {}])
         if not url:
             paginator = self.get_paginator(
@@ -525,7 +524,7 @@ class SingleLogViewer(DayLogViewer):
                 raise Http404
         oparams = self.request.GET.copy()
         oparams.update(params)
-        return '{0}?{1}'.format(url, oparams.urlencode())
+        return f'{url}?{oparams.urlencode()}'
 
 
 class MissedLogViewer(PaginatorPageLinksMixin, LogViewer, ListView):
@@ -538,6 +537,7 @@ class MissedLogViewer(PaginatorPageLinksMixin, LogViewer, ListView):
         data['use_absolute_url'] = True
         return data
 
+    @property
     def get_queryset(self):
         queryset = self.get_ordered_queryset(self.channel.log_set.all())
         nick = self.kwargs['nick']
@@ -545,9 +545,9 @@ class MissedLogViewer(PaginatorPageLinksMixin, LogViewer, ListView):
             # cover nicks in the form: nick OR nick_ OR nick|<something>
             last_exit = (queryset
                 .filter(
-                    Q(nick__iexact=nick) |
-                    Q(nick__istartswith="{0}|".format(nick)) |
-                    Q(nick__iexact="{0}_".format(nick)),
+                Q(nick__iexact=nick) |
+                Q(nick__istartswith=f"{nick}|") |
+                Q(nick__iexact=f"{nick}_"),
                     Q(command='QUIT') | Q(command='PART'))
                 .order_by('-timestamp')[0])
         except IndexError:
@@ -555,8 +555,8 @@ class MissedLogViewer(PaginatorPageLinksMixin, LogViewer, ListView):
         try:
             last_join = queryset.filter(
                 Q(nick__iexact=nick) |
-                Q(nick__istartswith="{0}|".format(nick)) |
-                Q(nick__iexact="{0}_".format(nick)), Q(command='JOIN'),
+                Q(nick__istartswith=f"{nick}|") |
+                Q(nick__iexact=f"{nick}_"), Q(command='JOIN'),
                 Q(timestamp__gt=last_exit.timestamp)).order_by('timestamp')[0]
             date_filter = {'timestamp__range': (last_exit.timestamp,
                                                 last_join.timestamp)}

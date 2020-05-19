@@ -1,5 +1,3 @@
-from optparse import make_option
-
 from django.core.management.base import BaseCommand
 
 from botbot.apps.logs import models
@@ -20,6 +18,6 @@ class Command(BaseCommand):
             self.stderr.write(
                 "One argument (the nick to be redacted) is required.")
         nick = args[0]
-        self.stdout.write("Redacting logs for '{0}'".format(nick))
+        self.stdout.write(f"Redacting logs for '{nick}'")
         count = _redact_logs_for_nick(nick)
-        self.stdout.write("{0} log lines redacted".format(count))
+        self.stdout.write(f"{count} log lines redacted")

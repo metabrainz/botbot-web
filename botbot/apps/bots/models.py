@@ -68,11 +68,11 @@ class ChatBot(models.Model):
         return self.server.split(':')[0]
 
     def __unicode__(self):
-        return '{server} ({nick})'.format(server=self.server, nick=self.nick)
+        return f'{self.server} ({self.nick})'
 
     @property
     def date_cache_key(self):
-        return 'dc:{0}'.format(self.pk)
+        return f'dc:{self.pk}'
 
     def save(self, *args, **kwargs):
         self.server_identifier = "%s.%s" % (
@@ -194,10 +194,10 @@ class Channel(TimeStampedModel):
 
     @property
     def active_plugin_slugs_cache_key(self):
-        return 'channel:{0}:plugins'.format(self.name)
+        return f'channel:{self.name}:plugins'
 
     def plugin_config_cache_key(self, slug):
-        return 'channel:{0}:{1}:config'.format(self.name, slug)
+        return f'channel:{self.name}:{slug}:config'
 
     @property
     def active_plugin_slugs(self):
@@ -335,4 +335,4 @@ class UserCount(models.Model):
     counts = ArrayField(models.IntegerField(blank=True), blank=True)
 
     def __unicode__(self):
-        return "{} on {}: {}".format(self.channel, self.dt, self.counts)
+        return f"{self.channel} on {self.dt}: {self.counts}"
