@@ -1,6 +1,6 @@
 """Near duplicate of Django's `urlizetrunc` with support for image classes"""
-import urllib.parse
 
+from urllib.parse import parse_qs, urlparse, urlunparse
 from django.template.base import Node
 from django.template.library import Library
 from django.template.defaultfilters import stringfilter
@@ -45,8 +45,7 @@ def is_embeddable(url):
         return IMAGE, True
 
     elif url.hostname in ['www.youtube.com'] and \
-            url.path.startswith('/watch') and \
-                    'v' in urllib.parse.parse_qs(url.query, False):
+            url.path.startswith('/watch') and 'v' in parse_qs(url.query, False):
         return YOUTUBE, True
 
     elif url.hostname == "cl.ly":
@@ -77,7 +76,7 @@ def parse_url(word):
         url = 'mailto:%s@%s' % (local, domain)
 
     if url:
-        return urllib.parse.urlparse(url)
+        return urlparse(url)
 
 
 def embed_image(url):
@@ -89,10 +88,10 @@ def embed_image(url):
     :return: two urls
     """
     if url.hostname in ["www.dropbox.com", "dropbox.com"]:
-        src = urllib.parse.urlunparse((url.scheme, "dl.dropboxusercontent.com",
-                                   url.path, url.params, url.query,
-                                   url.fragment))
-        link = urllib.parse.urlunparse(url)
+        src = urlunparse((url.scheme, "dl.dropboxusercontent.com",
+                         url.path, url.params, url.query,
+                         url.fragment))
+        link = urlunparse(url)
 
         return link, src
 
@@ -104,12 +103,12 @@ def embed_image(url):
         if match:
             image_id = match.group('image_id')
 
-            src = urllib.parse.urlunparse((
+            src = urlunparse((
             url.scheme, url.hostname, "/{}/content".format(image_id),
             url.params, url.query, url.fragment))
-            return urllib.parse.urlunparse(url), src
+            return urlunparse(url), src
 
-    return urllib.parse.urlunparse(url), urllib.parse.urlunparse(url)
+    return urlunparse(url), urlunparse(url)
 
 
 def build_html_attrs(html_attrs):
@@ -139,9 +138,9 @@ def embed_youtube(url):
     :param url:
     :return: display link, src
     """
-    video_id = urllib.parse.parse_qs(url.query)['v'][0]
+    video_id = parse_qs(url.query)['v'][0]
 
-    return urllib.parse.urlunparse(
+    return urlunparse(
         url), "//www.youtube.com/embed/{id}".format(id=video_id)
 
 
@@ -220,7 +219,7 @@ def urlize_impl(text, trim_url_limit=None, nofollow=False, autoescape=False):
                         html_attrs['data-src'] = src
 
                     if 'href' not in html_attrs:
-                        html_attrs['href'] = urllib.parse.urlunparse(url)
+                        html_attrs['href'] = urlunparse(url)
 
                     trimmed = trim_url(middle)
                     middle = "<a{attrs}>{text}</a>".format(
