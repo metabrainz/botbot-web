@@ -1,6 +1,7 @@
 from django import forms
 from . import models
 
+
 class PluginsForm(forms.Form):
     plugins = forms.ModelMultipleChoiceField(required=False,
         queryset=models.Plugin.objects.all(),

@@ -38,8 +38,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'botbot'
-copyright = u'%d, Lincoln Loop' % datetime.date.today().year
+project = 'botbot'
+copyright = '%d, Lincoln Loop' % datetime.date.today().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -173,8 +173,8 @@ htmlhelp_basename = 'botbotdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'botbot.tex', u'botbot Documentation',
-   u'Lincoln Loop', 'manual'),
+  ('index', 'botbot.tex', 'botbot Documentation',
+   'Lincoln Loop', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

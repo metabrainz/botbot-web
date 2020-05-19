@@ -1,7 +1,5 @@
-from __future__ import absolute_import  # Python 2 only
-
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext
 
@@ -21,7 +19,7 @@ def environment(**options):
         "jinja2.ext.autoescape",
         "jinja2.ext.with_",
         "jinja2.ext.i18n",
-        'pipeline.templatetags.ext.PipelineExtension',
+        'pipeline.jinja2.PipelineExtension',
         'django_jinja.builtins.extensions.CacheExtension',
     ]
     env = Environment(**options)

@@ -64,4 +64,4 @@ class Plugin(BasePlugin):
                     command=line._command,
                     raw=line._raw)
 
-    logit.route_rule = ('firehose', ur'(.*)')
+    logit.route_rule = ('firehose', r'(.*)')

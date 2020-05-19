@@ -19,14 +19,14 @@ class Plugin(BasePlugin):
 
         {{ nick }}: help images
     """
-    @listens_to_mentions(ur'^help$')
+    @listens_to_mentions(r'^help$')
     def respond_to_help(self, line):
         plugins = [plgn.slug for plgn in line._channel.plugins.all()]
         help_url = get_help_url(line._channel)
-        return u'Available plugins: {0} ({1})'.format(', '.join(plugins),
+        return 'Available plugins: {0} ({1})'.format(', '.join(plugins),
                                                       help_url)
 
-    @listens_to_mentions(ur'^help (?P<command>.*)')
+    @listens_to_mentions(r'^help (?P<command>.*)')
     def respond_to_plugin_help(self, line, command):
         """Returns first line of docstring and link to more"""
         slug = command.strip()

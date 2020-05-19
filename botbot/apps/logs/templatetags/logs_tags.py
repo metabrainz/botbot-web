@@ -1,15 +1,14 @@
 """Near duplicate of Django's `urlizetrunc` with support for image classes"""
-import urlparse
+import urllib.parse
 
-from django.template.base import Library, Node
+from django.template.base import Node
+from django.template.library import Library
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe, SafeData
 from django.utils.encoding import force_text
-from django.utils.functional import allow_lazy
-from django.utils import six
-from django.utils.html import (TRAILING_PUNCTUATION, WRAPPING_PUNCTUATION,
+from django.utils.html import (TRAILING_PUNCTUATION_CHARS, WRAPPING_PUNCTUATION,
                                word_split_re, simple_url_re, smart_urlquote,
-                               simple_url_2_re, simple_email_re, escape)
+                               simple_url_2_re, escape)
 import re
 
 
@@ -18,6 +17,8 @@ register = Library()
 image_file_types = [".png", ".jpg", ".jpeg", ".gif"]
 IMAGE = 1
 YOUTUBE = 2
+
+email_re = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
 
 @register.filter(is_safe=True, needs_autoescape=True)
@@ -30,7 +31,7 @@ def bbme_urlizetrunc(value, limit, autoescape=None):
     Argument: Length to truncate URLs to.
     """
     return mark_safe(urlize_impl(value, trim_url_limit=int(limit), nofollow=True,
-                            autoescape=autoescape))
+                                 autoescape=autoescape))
 
 
 def is_embeddable(url):
@@ -45,7 +46,7 @@ def is_embeddable(url):
 
     elif url.hostname in ['www.youtube.com'] and \
             url.path.startswith('/watch') and \
-                    'v' in urlparse.parse_qs(url.query, False):
+                    'v' in urllib.parse.parse_qs(url.query, False):
         return YOUTUBE, True
 
     elif url.hostname == "cl.ly":
@@ -61,11 +62,12 @@ def parse_url(word):
     :return: None or parsed url
     """
     url = None
+
     if simple_url_re.match(word):
         url = smart_urlquote(word)
     elif simple_url_2_re.match(word):
         url = smart_urlquote('http://%s' % word)
-    elif not ':' in word and simple_email_re.match(word):
+    elif ':' not in word and email_re.match(word):
         local, domain = word.rsplit('@', 1)
         try:
             domain = domain.encode('idna').decode('ascii')
@@ -75,7 +77,7 @@ def parse_url(word):
         url = 'mailto:%s@%s' % (local, domain)
 
     if url:
-        return urlparse.urlparse(url)
+        return urllib.parse.urlparse(url)
 
 
 def embed_image(url):
@@ -87,10 +89,10 @@ def embed_image(url):
     :return: two urls
     """
     if url.hostname in ["www.dropbox.com", "dropbox.com"]:
-        src = urlparse.urlunparse((url.scheme, "dl.dropboxusercontent.com",
+        src = urllib.parse.urlunparse((url.scheme, "dl.dropboxusercontent.com",
                                    url.path, url.params, url.query,
                                    url.fragment))
-        link = urlparse.urlunparse(url)
+        link = urllib.parse.urlunparse(url)
 
         return link, src
 
@@ -102,12 +104,12 @@ def embed_image(url):
         if match:
             image_id = match.group('image_id')
 
-            src = urlparse.urlunparse((
+            src = urllib.parse.urlunparse((
             url.scheme, url.hostname, "/{}/content".format(image_id),
             url.params, url.query, url.fragment))
-            return urlparse.urlunparse(url), src
+            return urllib.parse.urlunparse(url), src
 
-    return urlparse.urlunparse(url), urlparse.urlunparse(url)
+    return urllib.parse.urlunparse(url), urllib.parse.urlunparse(url)
 
 
 def build_html_attrs(html_attrs):
@@ -116,17 +118,17 @@ def build_html_attrs(html_attrs):
     :param html_attrs:
     :return:
     """
-    result = u""
-    for key, value in html_attrs.iteritems():
+    result = ""
+    for key, value in html_attrs.items():
         if isinstance(value, (list, tuple)):
             if value:
-                value = u" ".join(map(unicode, value))
+                value = " ".join(map(str, value))
             else:
                 value = None
         if not value:
             continue
 
-        result += u' {0}="{1}"'.format(key, value)
+        result += ' {0}="{1}"'.format(key, value)
 
     return result
 
@@ -137,10 +139,11 @@ def embed_youtube(url):
     :param url:
     :return: display link, src
     """
-    video_id = urlparse.parse_qs(url.query)['v'][0]
+    video_id = urllib.parse.parse_qs(url.query)['v'][0]
 
-    return urlparse.urlunparse(
+    return urllib.parse.urlunparse(
         url), "//www.youtube.com/embed/{id}".format(id=video_id)
+
 
 def urlize_impl(text, trim_url_limit=None, nofollow=False, autoescape=False):
     """
@@ -164,7 +167,7 @@ def urlize_impl(text, trim_url_limit=None, nofollow=False, autoescape=False):
     # sends a "Shift Up" control character we need to strip out, so the
     # urlify function does not grab it.
     try:
-        mpa = dict.fromkeys(range(32))
+        mpa = dict.fromkeys(list(range(32)))
         text = text.translate(mpa)
 
         trim_url = lambda x, limit=trim_url_limit: limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
@@ -176,7 +179,7 @@ def urlize_impl(text, trim_url_limit=None, nofollow=False, autoescape=False):
             if '.' in word or '@' in word or ':' in word:
                 # Deal with punctuation.
                 lead, middle, trail = '', word, ''
-                for punctuation in TRAILING_PUNCTUATION:
+                for punctuation in TRAILING_PUNCTUATION_CHARS:
                     if middle.endswith(punctuation):
                         middle = middle[:-len(punctuation)]
                         trail = punctuation + trail
@@ -217,11 +220,10 @@ def urlize_impl(text, trim_url_limit=None, nofollow=False, autoescape=False):
                         html_attrs['data-src'] = src
 
                     if 'href' not in html_attrs:
-                        html_attrs['href'] = urlparse.urlunparse(url)
-
+                        html_attrs['href'] = urllib.parse.urlunparse(url)
 
                     trimmed = trim_url(middle)
-                    middle = u"<a{attrs}>{text}</a>".format(
+                    middle = "<a{attrs}>{text}</a>".format(
                         attrs=build_html_attrs(html_attrs), text=trimmed)
 
                     words[i] = mark_safe('%s%s%s' % (lead, middle, trail))
@@ -237,12 +239,12 @@ def urlize_impl(text, trim_url_limit=None, nofollow=False, autoescape=False):
         return ''.join(words)
     except ValueError:
         return text
-bbme_urlizetrunc = allow_lazy(bbme_urlizetrunc, six.text_type)
+
 
 def strip_empty_lines(block):
     return '\n'.join(
         [l.strip() for l in block.splitlines() if l.strip()]).strip()
-strip_empty_lines = allow_lazy(strip_empty_lines, six.text_type)
+
 
 class WhiteLinelessNode(Node):
     def __init__(self, nodelist):
@@ -250,6 +252,7 @@ class WhiteLinelessNode(Node):
 
     def render(self, context):
         return strip_empty_lines(self.nodelist.render(context))
+
 
 @register.tag
 def whitelineless(parser, token):

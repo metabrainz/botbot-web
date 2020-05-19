@@ -2,8 +2,6 @@
 import datetime
 
 import pytz
-from django.core import mail
-from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from botbot.apps.accounts import models as account_models
@@ -47,7 +45,6 @@ class BaseTestCase(TestCase):
 
 
 class UrlTests(BaseTestCase):
-
     def assertFormError(self, response, form, field, error_str):
         """Override for Jinja2 templates"""
         self.assertIn(error_str,
@@ -76,5 +73,5 @@ class PrettySlugTestCase(TestCase):
             "irc.synirc.net": "synirc",
         }
 
-        for server, slug in original.iteritems():
+        for server, slug in original.items():
             self.assertEqual(pretty_slug(server), slug)

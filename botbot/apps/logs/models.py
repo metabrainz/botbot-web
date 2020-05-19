@@ -1,11 +1,9 @@
-import socket
-
 from djorm_pgfulltext.models import SearchManager
 from djorm_pgfulltext.fields import VectorField
 from django.db import models
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from botbot.apps.bots.utils import channel_url_kwargs
 
 
@@ -14,18 +12,18 @@ from . import utils
 REDACTED_TEXT = '[redacted]'
 
 MSG_TMPL = {
-        u"JOIN": u"{nick} joined the channel",
-        u"NICK": u"{nick} is now known as {text}",
-        u"QUIT": u"{nick} has quit",
-        u"PART": u"{nick} has left the channel",
-        u"ACTION": u"{nick} {text}",
-        u"SHUTDOWN": u"-- BotBot disconnected, possible missing messages --",
+        "JOIN": "{nick} joined the channel",
+        "NICK": "{nick} is now known as {text}",
+        "QUIT": "{nick} has quit",
+        "PART": "{nick} has left the channel",
+        "ACTION": "{nick} {text}",
+        "SHUTDOWN": "-- BotBot disconnected, possible missing messages --",
         }
 
 
 class Log(models.Model):
-    bot = models.ForeignKey('bots.ChatBot', null=True)
-    channel = models.ForeignKey('bots.Channel', null=True)
+    bot = models.ForeignKey('bots.ChatBot', null=True, on_delete=models.SET_NULL)
+    channel = models.ForeignKey('bots.Channel', null=True, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(db_index=True)
     nick = models.CharField(max_length=255)
     text = models.TextField()
@@ -63,13 +61,13 @@ class Log(models.Model):
     def as_html(self):
         return render_to_string("logs/log_display.html",
                                 {'message_list': [self]})
+
     def get_cleaned_host(self):
         if self.host:
             if '@' in self.host:
                 return self.host.split('@')[1]
             else:
                 return self.host
-
 
     def notify(self):
         """Send update to Nginx to be sent out via SSE"""
@@ -84,16 +82,16 @@ class Log(models.Model):
         return hash(self.nick) % 32
 
     def __unicode__(self):
-        if self.command == u"PRIVMSG":
-            text = u''
+        if self.command == "PRIVMSG":
+            text = ''
             if self.nick:
-                text += u'{0}: '.format(self.nick)
+                text += '{0}: '.format(self.nick)
             text += self.text[:20]
         else:
             try:
                 text = MSG_TMPL[self.command].format(nick=self.nick, text=self.text)
             except KeyError:
-                text = u"{}: {}".format(self.command, self.text)
+                text = "{}: {}".format(self.command, self.text)
 
         return text
 

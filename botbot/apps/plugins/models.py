@@ -1,7 +1,7 @@
 from django.core.cache import cache
 from django.contrib.admindocs.utils import trim_docstring
 from django.db import models
-from django.utils.importlib import import_module
+from importlib import import_module
 
 from botbot.core.fields import JSONField
 
@@ -28,9 +28,9 @@ class Plugin(models.Model):
 
 class ActivePlugin(models.Model):
     """An active plugin for a ChatBot"""
-    plugin = models.ForeignKey('plugins.Plugin')
-    channel = models.ForeignKey('bots.Channel')
-    configuration =  JSONField(
+    plugin = models.ForeignKey('plugins.Plugin', on_delete=models.CASCADE)
+    channel = models.ForeignKey('bots.Channel', on_delete=models.CASCADE)
+    configuration = JSONField(
             blank=True, default={},
             help_text="User-specified attributes for this plugin " +
             '{"username": "joe", "api-key": "foo"}')
@@ -43,4 +43,4 @@ class ActivePlugin(models.Model):
         return obj
 
     def __unicode__(self):
-        return u'{0} for {1}'.format(self.plugin.name, self.channel.name)
+        return '{0} for {1}'.format(self.plugin.name, self.channel.name)

@@ -1,5 +1,5 @@
 from django import http
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic.list import ListView
@@ -36,7 +36,7 @@ class ChannelMixin(object):
         """
         try:
             self.channel = self.get_channel(user=request.user, **kwargs)
-        except self.LegacySlugUsage, e:
+        except self.LegacySlugUsage as e:
             return http.HttpResponsePermanentRedirect(e.url)
 
         return super(ChannelMixin, self).dispatch(request, *args, **kwargs)

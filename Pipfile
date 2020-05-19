@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+django = "*"
+redis = "*"
+geoip2 = "*"
+requests = "*"
+jinja2 = "*"
+django-allauth = "*"
+django-bootstrap-toolkit = "*" # Abandoned
+django-pipeline = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+gevent = "*"
+markdown = "*"
+djorm-ext-pgfulltext = "*" # Abandoned
+django-jinja = "*"
+
+[requires]
+python_version = "3.8"

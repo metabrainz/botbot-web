@@ -21,7 +21,7 @@ class ChannelURLNode(template.Node):
 
         args = [arg.resolve(context) for arg in self.args]
         kwargs = dict([(smart_str(k, 'ascii'), v.resolve(context))
-                       for k, v in self.kwargs.items()])
+                       for k, v in list(self.kwargs.items())])
 
         return utils.reverse_channel(channel, view_name, args=args,
             kwargs=kwargs, current_app=context.current_app)

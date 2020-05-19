@@ -33,7 +33,7 @@ import datetime
 
 
 def _get_channel(channel_name):
-    "Attempts to locate a channel with the given name in the BotBot database."
+    """Attempts to locate a channel with the given name in the BotBot database."""
 
     try:
         return Channel.objects.get(name=channel_name)
@@ -90,12 +90,12 @@ class Command(BaseCommand):
         channel_name = '#' + options['channel']
         self.channel = _get_channel(channel_name)
 
-        print (
+        print((
             'About to import logs from {} to Channel "{}" with Bot "{}"'
             .format(options['source_dir'], channel_name, self.bot.nick)
-        )
+        ))
 
-        prompt = raw_input("Continue? (Y/n) ")
+        prompt = input("Continue? (Y/n) ")
         if prompt and prompt.lower() != 'y':
             raise CommandError('User aborted import.')
 
@@ -110,7 +110,7 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def _import_file(self, path):
-        print "Importing {}".format(path)
+        print("Importing {}".format(path))
         date = os.path.splitext(os.path.basename(path))[0]
         with open(path, 'r') as f:
             for line in f:
@@ -149,7 +149,7 @@ class Command(BaseCommand):
                             entry.delete()
                     existing_entries = most_precise
             elif existing_entries:
-                for key, value in result.iteritems():
+                for key, value in result.items():
                     setattr(existing_entries[0], key, value)
             else:
                 result.update({
@@ -166,30 +166,30 @@ class Command(BaseCommand):
             # JOIN
             return {
                 'room': self.channel.name,
-                'command': u'JOIN',
-                'text': u''
+                'command': 'JOIN',
+                'text': ''
             }
         elif content.startswith("{} has left {}".format(nick,
                                                         self.channel.name)):
             # PART
             return {
                 'room': self.channel.name,
-                'command': u'PART',
-                'text': u''
+                'command': 'PART',
+                'text': ''
             }
         elif content.startswith("{} has quit".format(nick)):
             # QUIT
             return {
                 'room': self.channel.name,
-                'command': u'QUIT',
-                'text': u''
+                'command': 'QUIT',
+                'text': ''
             }
         elif content.startswith("* {} ".format(nick)):
             # ACTION
             nick_length = len(nick) + 3
             return {
                 'room': self.channel.name,
-                'command': u'ACTION',
+                'command': 'ACTION',
                 'text': content[nick_length:]
             }
         elif content.startswith("{} has changed"):
@@ -199,6 +199,6 @@ class Command(BaseCommand):
             # PRIVMSG
             return {
                 'room': self.channel.name,
-                'command': u'PRIVMSG',
+                'command': 'PRIVMSG',
                 'text': content
             }

@@ -7,6 +7,7 @@ from django.utils.timezone import utc
 
 import markdown
 
+
 def plugin_docs_as_html(plugin, channel):
     tmpl = Template(plugin.user_docs)
     ctxt = Context({
@@ -15,6 +16,7 @@ def plugin_docs_as_html(plugin, channel):
         'SITE': 'http://chatlogs.metabrainz.org',
     })
     return markdown.markdown(urlize(tmpl.render(ctxt)))
+
 
 def convert_nano_timestamp(nano_timestamp):
     """

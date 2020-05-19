@@ -4,7 +4,8 @@ import logging
 from django.conf import settings
 from django.core.cache import cache
 import requests
-import geoip2.database, geoip2.errors
+import geoip2.database
+import geoip2.errors
 
 LOG = logging.getLogger(__name__)
 
@@ -38,6 +39,7 @@ def _send_event_with_id(event_name, data, event_id, ip, channel):
         requests.post(settings.PUSH_STREAM_URL.format(id='glob'),
                       headers={'Event-Id': event_id, 'Event-Type': 'loc'},
                       data=json.dumps(ip_lookup(ip)))
+
 
 if settings.PUSH_STREAM_URL:
     send_event_with_id = _send_event_with_id

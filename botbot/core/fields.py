@@ -3,24 +3,17 @@ import json
 from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
 
-from django.forms import fields
-from django.forms.util import ValidationError
-
-
 
 class JSONField(models.TextField):
     """JSONField is a generic textfield that neatly serializes/unserializes
     JSON objects seamlessly"""
-
-    # Used so to_python() is called
-    __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
         """Convert our string value to JSON after we load it from the DB"""
         if value == "":
             return None
         try:
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 return json.loads(value)
         except ValueError:
             pass
@@ -42,9 +35,3 @@ class JSONField(models.TextField):
         if self.null and value is None:
             return None
         return json.dumps(value)
-
-try:
-    from south.modelsinspector import add_introspection_rules
-    add_introspection_rules([], ["^botbot\.core\.fields\.JSONField"])
-except ImportError:
-    pass

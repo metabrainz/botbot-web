@@ -22,7 +22,6 @@ class ActivePluginInline(admin.StackedInline):
         return 0
 
 
-
 class ChatBotAdmin(admin.ModelAdmin):
     exclude = ('connection', 'server_identifier')
     list_display = ('__unicode__', 'is_active', 'usage')
@@ -33,7 +32,8 @@ class ChatBotAdmin(admin.ModelAdmin):
     # Disable bulk delete, because it doesn't call delete, so skips REFRESH
     actions = None
 
-    def usage(self, obj):
+    @staticmethod
+    def usage(obj):
         return "%d%%" % (
             (obj.channel_set.filter(status=models.Channel.ACTIVE).count() / float(obj.max_channels)) * 100)
 
@@ -44,6 +44,8 @@ def botbot_refresh(modeladmin, request, queryset):
     """
     queue = redis.from_url(settings.REDIS_PLUGIN_QUEUE_URL)
     queue.lpush('bot', 'REFRESH')
+
+
 botbot_refresh.short_description = "Reload botbot-bot configuration"
 
 
@@ -83,6 +85,7 @@ class PublicChannels(models.Channel):
     class Meta:
         proxy = True
         verbose_name = "Pending Public Channel"
+
 
 admin.site.register(PublicChannels, PublicChannelApproval)
 

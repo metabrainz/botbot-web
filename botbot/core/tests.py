@@ -8,7 +8,7 @@ from django.test import TestCase
 class TestInfinitePaginator(TestCase):
 
     def setUp(self):
-        self.p = InfinitePaginator(range(20), 2,
+        self.p = InfinitePaginator(list(range(20)), 2,
                                    link_template='/bacon/page/%d')
 
     def test_validate_number(self):

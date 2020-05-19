@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 
 from botbot.apps.logs import models
 
+
 def _redact_logs_for_nick(nick):
     redacted_count = models.Log.objects.filter(nick=nick).update(
         text=models.REDACTED_TEXT)

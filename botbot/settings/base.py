@@ -1,13 +1,12 @@
 import ast
 import os
-import urlparse
 # Import global settings to make it easier to extend settings.
 from django.conf.global_settings import *   # pylint: disable=W0614,W0401
 import dj_database_url
 
-#==============================================================================
+# ==============================================================================
 # Generic Django project settings
-#==============================================================================
+# ==============================================================================
 
 DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'True'))
 
@@ -31,12 +30,9 @@ INSTALLED_APPS = (
     'botbot.apps.bots',
     'botbot.apps.logs',
     'botbot.apps.plugins',
-    'botbot.apps.kudos',
     'botbot.core',
 
-    'launchpad',
     'pipeline',
-    'django_statsd',
 
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,9 +49,9 @@ INSTALLED_APPS = (
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
-#==============================================================================
+# ==============================================================================
 # Calculation of directories relative to the project module location
-#==============================================================================
+# ==============================================================================
 
 import os
 import sys
@@ -66,7 +62,7 @@ PROJECT_DIR = os.path.dirname(os.path.realpath(project_module.__file__))
 PYTHON_BIN = os.path.dirname(sys.executable)
 ve_path = os.path.dirname(os.path.dirname(os.path.dirname(PROJECT_DIR)))
 if "VAR_ROOT" in os.environ:
-     VAR_ROOT = os.environ.get("VAR_ROOT")
+    VAR_ROOT = os.environ.get("VAR_ROOT")
 # Assume that the presence of 'activate_this.py' in the python bin/
 # directory means that we're running in a virtual environment.
 elif os.path.exists(os.path.join(PYTHON_BIN, 'activate_this.py')):
@@ -84,9 +80,9 @@ else:
 if not os.path.exists(VAR_ROOT):
     os.mkdir(VAR_ROOT)
 
-#==============================================================================
+# ==============================================================================
 # Project URLS and media settings
-#==============================================================================
+# ==============================================================================
 
 ROOT_URLCONF = 'botbot.urls'
 INCLUDE_DJANGO_ADMIN = ast.literal_eval(os.environ.get(
@@ -109,7 +105,6 @@ STATICFILES_DIRS = (
 )
 
 # Defines PIPELINE settings and bundles
-from ._asset_pipeline import *
 
 DATABASES = {'default': dj_database_url.config(env='STORAGE_URL')}
 # Reuse database connections
@@ -121,9 +116,9 @@ DATABASES['default'].update({
 GEOIP_CITY_DB_PATH = os.environ.get('GEOIP_CITY_DB_PATH',
     os.path.join(VAR_ROOT, 'GeoLite2-City.mmdb'))
 
-#==============================================================================
+# ==============================================================================
 # Templates
-#==============================================================================
+# ==============================================================================
 import pipeline
 TEMPLATES = [
     {
@@ -148,34 +143,29 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
+                "django.template.context_processors.request",
                 "django.contrib.messages.context_processors.messages",
-                "django.core.context_processors.request",
-                "allauth.account.context_processors.account",
-                "allauth.socialaccount.context_processors.socialaccount",
             ),
             'debug': DEBUG,
 
         },
     },
 ]
-#==============================================================================
+# ==============================================================================
 # Middleware
-#==============================================================================
-MIDDLEWARE_CLASSES = (
-    'django_statsd.middleware.GraphiteRequestTimingMiddleware',
-    'django_statsd.middleware.GraphiteMiddleware',
+# ==============================================================================
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
-) + MIDDLEWARE_CLASSES + (
+] + MIDDLEWARE + [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'botbot.core.middleware.TimezoneMiddleware',
-)
+]
 
-#==============================================================================
+# ==============================================================================
 # Auth / security
-#============================================================================
+# ============================================================================
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 AUTHENTICATION_BACKENDS += (
@@ -185,9 +175,9 @@ AUTHENTICATION_BACKENDS += (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-#==============================================================================
+# ==============================================================================
 # Logger project settings
-#==============================================================================
+# ==============================================================================
 
 LOGGING = {
     'version': 1,
@@ -203,7 +193,7 @@ LOGGING = {
     'handlers': {
         'null': {
             'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler',
+            'class': 'logging.NullHandler',
         },
         'console': {
             'level': 'DEBUG',
@@ -229,9 +219,9 @@ LOGGING = {
     }
 }
 
-#=============================================================================
+# =============================================================================
 # Cache
-#=============================================================================
+# =============================================================================
 if 'MEMCACHE_URL' in os.environ:
     DEFAULT_CACHE = {
         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
@@ -249,9 +239,9 @@ CACHES = {
 
 CACHE_MIDDLEWARE_SECONDS = 600  # Unit is second
 
-#=============================================================================
+# =============================================================================
 # Email
-#=============================================================================
+# =============================================================================
 
 ADMINS = (
     ('LL', 'info@lincolnloop.com'),
@@ -259,9 +249,9 @@ ADMINS = (
 EMAIL_SUBJECT_PREFIX = "[BBME] "
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-#==============================================================================
+# ==============================================================================
 # Miscellaneous project settings
-#==============================================================================
+# ==============================================================================
 
 # Above this many users is considered a big channel, display is different
 BIG_CHANNEL = 25
@@ -294,24 +284,14 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_uid',
     'social.pipeline.social_auth.auth_allowed',
     'social.pipeline.social_auth.social_user',
-    #'social.pipeline.user.get_username',
-    #'social.pipeline.user.create_user',
+    # 'social.pipeline.user.get_username',
+    # 'social.pipeline.user.create_user',
     'social.pipeline.social_auth.associate_by_email',
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details'
 )
 
 # Allauth
-ACCOUNT_LOGOUT_ON_GET = (True)
-
-# Statsd
-STATSD_CLIENT = 'django_statsd.clients.request_aggregate'
-
-STATSD_PATCHES = [
-    'django_statsd.patches.db',
-    'django_statsd.patches.cache',
-]
-
-STATSD_PREFIX = os.environ.get('STATSD_PREFIX', 'bbme')
+ACCOUNT_LOGOUT_ON_GET = True
 
 DJANGO_HSTORE_ADAPTER_REGISTRATION = 'connection'
