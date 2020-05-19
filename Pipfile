@@ -20,6 +20,7 @@ gevent = "*"
 markdown = "*"
 djorm-ext-pgfulltext = "*" # Abandoned
 django-jinja = "*"
+slimit = "*"
 
 [requires]
 python_version = "3.8"
