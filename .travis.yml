@@ -1,25 +1,28 @@
 language: python
 python:
-  - "2.7"
+  - "3.8"
 cache:
   directories:
     - $HOME/.cache/pip
     - $HOME/virtualenv
 sudo: false
 install:
-  - "pip install -e . -r requirements.txt"
+  - "export WOKON_HOME=.pipenv/venvs"
+  - "export PIP_CACHE_DIR=.pipenv/pipcache"
+  - "pip install pipenv"
+  - "pipenv install --dev"
 services:
   - postgresql
-  - redis-server
+  - redis
 before_script:
   # Necessary variables
   - "export WEB_SECRET_KEY=somerandomstring"
-  - "export STORAGE_URL=postgres://postgres@localhost:5432/botbot"
+  - "export STORAGE_URL=postgres://postgres@localhost:5432/brainzbot"
   - "export REDIS_PLUGIN_STORAGE_URL=redis://localhost:6379/0"
   - "export REDIS_PLUGIN_QUEUE_URL=redis://localhost:6379/1"
-  - "psql -c 'create database botbot;' -U postgres"
-  - "psql -c 'create extension hstore;' -U postgres botbot"
+  - "psql -c 'create database brainzbot;' -U postgres"
+  - "psql -c 'create extension hstore;' -U postgres brainzbot"
   - "psql -c 'create extension hstore;' -U postgres template1"
-  - "echo 'STORAGE_URL=postgres://postgres@localhost:5432/botbot' >> .env"
-  - "manage.py collectstatic --noinput"
-script: "manage.py test"
+  - "echo 'STORAGE_URL=postgres://postgres@localhost:5432/brainzbot' >> .env"
+  - "pipenv run python manage.py collectstatic --noinput"
+script: "pipenv run python manage.py test"
