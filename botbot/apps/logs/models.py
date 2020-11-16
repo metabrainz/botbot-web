@@ -81,7 +81,7 @@ class Log(models.Model):
     def get_nick_color(self):
         return hash(self.nick) % 32
 
-    def __unicode__(self):
+    def __str__(self):
         if self.command == "PRIVMSG":
             text = ''
             if self.nick:

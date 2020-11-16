@@ -24,7 +24,7 @@ class ActivePluginInline(admin.StackedInline):
 
 class ChatBotAdmin(admin.ModelAdmin):
     exclude = ('connection', 'server_identifier')
-    list_display = ('__unicode__', 'is_active', 'usage')
+    list_display = ('__str__', 'is_active', 'usage')
     list_editable = ('is_active',)
     list_filter = ('is_active',)
     readonly_fields = ('server_identifier',)

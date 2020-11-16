@@ -1,12 +1,10 @@
 # pylint: disable=W0212
 import json
 import logging
-from datetime import datetime
-
-from django.utils.timezone import utc
 import re
 import redis
 import botbot_plugins.plugins
+
 from django.core.cache import cache
 from django.conf import settings
 from importlib import import_module

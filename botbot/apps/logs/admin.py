@@ -31,7 +31,7 @@ class CommandListFilter(admin.SimpleListFilter):
 
 
 class LogAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__', 'command', 'bot', 'timestamp']
+    list_display = ['__str__', 'command', 'bot', 'timestamp']
     list_filter = ['bot', CommandListFilter]
     paginator = PostgresLargeTablePaginator
 

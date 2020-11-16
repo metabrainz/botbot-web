@@ -1,9 +1,8 @@
 from django.core.cache import cache
 from django.contrib.admindocs.utils import trim_docstring
 from django.db import models
+from django.contrib.postgres.fields import JSONField  # TODO: deprecated in Django 3.1
 from importlib import import_module
-
-from botbot.core.fields import JSONField
 
 
 class Plugin(models.Model):
@@ -22,7 +21,7 @@ class Plugin(models.Model):
                 continue
         return ''
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -42,5 +41,5 @@ class ActivePlugin(models.Model):
         cache.delete(self.channel.active_plugin_slugs_cache_key)
         return obj
 
-    def __unicode__(self):
+    def __str__(self):
         return f'{self.plugin.name} for {self.channel.name}'
