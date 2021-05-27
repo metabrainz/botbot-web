@@ -117,13 +117,15 @@ class PostgresLargeTablePaginator(Paginator):
     table. If the value is below 10,000 it will do a COUNT(*) on the table.
 
     Also if there is a where filter on the query it will use count()
+
+    See also https://medium.com/squad-engineering/estimated-counts-for-faster-django-admin-change-list-963cbf43683e
     """
 
     def _get_count(self):
         """
         Overwrite count to use custom logic of postgres.
         """
-        if self._count is None:
+        if not hasattr(self, "_count"):
             try:
                 estimate = 0
                 if not self.object_list.query.where:
