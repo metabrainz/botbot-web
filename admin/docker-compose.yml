@@ -5,6 +5,8 @@ services:
     image: postgres
     networks:
       - brainzbot
+    ports:
+      - 5432:5432
     env_file: docker-compose.env
 
   redis:
@@ -12,6 +14,8 @@ services:
     image: redis
     networks:
       - brainzbot
+    ports:
+      - 6379:6379
 
   core:
     container_name: brainzbot-core
@@ -38,6 +42,12 @@ services:
       - brainzbot
       - default # Some plugins require access to external services
     env_file: docker-compose.env
+
+  ircd:
+    container_name: brainzbot-ircd
+    image: inspircd/inspircd-docker
+    ports:
+      - 6667:6667
 
 networks:
   brainzbot:
