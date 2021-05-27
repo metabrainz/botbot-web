@@ -1,5 +1,6 @@
+import inspect
+
 from django.core.cache import cache
-from django.contrib.admindocs.utils import trim_docstring
 from django.db import models
 from django.contrib.postgres.fields import JSONField  # TODO: deprecated in Django 3.1
 from importlib import import_module
@@ -16,7 +17,7 @@ class Plugin(models.Model):
                            'botbot.apps.plugins.core.'):
             try:
                 docs = import_module(mod_prefix + self.slug).Plugin.__doc__
-                return trim_docstring(docs)
+                return inspect.cleandoc(docs)
             except (ImportError, AttributeError):
                 continue
         return ''

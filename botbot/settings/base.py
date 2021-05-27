@@ -1,7 +1,6 @@
 import ast
 import os
-# Import global settings to make it easier to extend settings.
-from django.conf.global_settings import *   # pylint: disable=W0614,W0401
+from django.conf.global_settings import MIDDLEWARE, AUTHENTICATION_BACKENDS
 import dj_database_url
 
 # ==============================================================================
