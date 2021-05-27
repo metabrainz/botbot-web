@@ -43,6 +43,8 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.sitemaps',
 
+    'django_jsonfield_backport',
+
     'bootstrap_toolkit',
 )
 

@@ -23,6 +23,7 @@ markdown = "*"
 djorm-ext-pgfulltext = "*" # Abandoned
 django-jinja = "*"
 slimit = "*"
+django-jsonfield-backport = "*"
 
 [requires]
 python_version = "3.9"

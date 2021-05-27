@@ -2,7 +2,7 @@ import inspect
 
 from django.core.cache import cache
 from django.db import models
-from django.contrib.postgres.fields import JSONField  # TODO: deprecated in Django 3.1
+from django_jsonfield_backport.models import JSONField
 from importlib import import_module
 
 
