@@ -1,29 +1,28 @@
-from djorm_pgfulltext.models import SearchManager
-from djorm_pgfulltext.fields import VectorField
-from django.db import models
 from django.conf import settings
+from django.db import models
 from django.template.loader import render_to_string
 from django.urls import reverse
-from botbot.apps.bots.utils import channel_url_kwargs
-
+from djorm_pgfulltext.fields import VectorField
+from djorm_pgfulltext.models import SearchManager
 
 from . import utils
+from botbot.apps.bots.utils import channel_url_kwargs
 
-REDACTED_TEXT = '[redacted]'
+REDACTED_TEXT = "[redacted]"
 
 MSG_TMPL = {
-        "JOIN": "{nick} joined the channel",
-        "NICK": "{nick} is now known as {text}",
-        "QUIT": "{nick} has quit",
-        "PART": "{nick} has left the channel",
-        "ACTION": "{nick} {text}",
-        "SHUTDOWN": "-- BotBot disconnected, possible missing messages --",
-        }
+    "JOIN": "{nick} joined the channel",
+    "NICK": "{nick} is now known as {text}",
+    "QUIT": "{nick} has quit",
+    "PART": "{nick} has left the channel",
+    "ACTION": "{nick} {text}",
+    "SHUTDOWN": "-- BotBot disconnected, possible missing messages --",
+}
 
 
 class Log(models.Model):
-    bot = models.ForeignKey('bots.ChatBot', null=True, on_delete=models.SET_NULL)
-    channel = models.ForeignKey('bots.Channel', null=True, on_delete=models.CASCADE)
+    bot = models.ForeignKey("bots.ChatBot", null=True, on_delete=models.SET_NULL)
+    channel = models.ForeignKey("bots.Channel", null=True, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(db_index=True)
     nick = models.CharField(max_length=255)
     text = models.TextField()
@@ -40,52 +39,48 @@ class Log(models.Model):
     search_index = VectorField()
 
     objects = SearchManager(
-        fields=('text',),
-        config='pg_catalog.english',   # this is default
-        search_field='search_index',   # this is default
-        auto_update_search_field=True
+        fields=("text",),
+        config="pg_catalog.english",  # this is default
+        search_field="search_index",  # this is default
+        auto_update_search_field=True,
     )
 
     class Meta:
-        ordering = ('-timestamp',)
+        ordering = ("-timestamp",)
         index_together = [
-            ['channel', 'timestamp'],
+            ["channel", "timestamp"],
         ]
 
     def get_absolute_url(self):
         kwargs = channel_url_kwargs(self.channel)
-        kwargs['msg_pk'] = self.pk
+        kwargs["msg_pk"] = self.pk
 
-        return reverse('log_message_permalink', kwargs=kwargs)
+        return reverse("log_message_permalink", kwargs=kwargs)
 
     def as_html(self):
-        return render_to_string("logs/log_display.html",
-                                {'message_list': [self]})
+        return render_to_string("logs/log_display.html", {"message_list": [self]})
 
     def get_cleaned_host(self):
         if self.host:
-            if '@' in self.host:
-                return self.host.split('@')[1]
+            if "@" in self.host:
+                return self.host.split("@")[1]
             else:
                 return self.host
 
     def notify(self):
         """Send update to Nginx to be sent out via SSE"""
         utils.send_event_with_id(
-            "log",
-            self.as_html(),
-            self.timestamp.isoformat(),
-            self.get_cleaned_host(),
-            channel=self.channel_id)
+            "log", self.as_html(), self.timestamp.isoformat(), self.get_cleaned_host(), channel=self.channel_id
+        )
 
     def get_nick_color(self):
         return hash(self.nick) % 32
 
     def __str__(self):
         if self.command == "PRIVMSG":
-            text = ''
+            text = ""
             if self.nick:
-                text += f'{self.nick}: '
+                text += f"{self.nick}: "
             text += self.text[:20]
         else:
             try:
@@ -102,7 +97,7 @@ class Log(models.Model):
         if self.nick in settings.EXCLUDE_NICKS:
             self.text = REDACTED_TEXT
 
-        obj = super(Log, self).save(*args, **kwargs)
+        obj = super().save(*args, **kwargs)
         if is_new:
             self.notify()
         return obj

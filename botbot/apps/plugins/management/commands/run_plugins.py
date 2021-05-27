@@ -8,12 +8,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--with-gevent',
-            action='store_true',
-            dest='with_gevent',
+            "--with-gevent",
+            action="store_true",
+            dest="with_gevent",
             default=False,
-            help='Use gevent for concurrency',
+            help="Use gevent for concurrency",
         )
 
     def handle(self, *args, **options):
-        runner.start_plugins(use_gevent=options['with_gevent'])
+        runner.start_plugins(use_gevent=options["with_gevent"])

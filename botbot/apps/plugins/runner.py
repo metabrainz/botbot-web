@@ -2,49 +2,52 @@
 import json
 import logging
 import re
-import redis
-import botbot_plugins.plugins
-
-from django.core.cache import cache
-from django.conf import settings
 from importlib import import_module
 
-from botbot.apps.bots import models as bots_models
-from botbot.apps.plugins.utils import convert_nano_timestamp, log_on_error
+import botbot_plugins.plugins
+import redis
+from django.conf import settings
+from django.core.cache import cache
+
 from .plugin import RealPluginMixin
+from botbot.apps.bots import models as bots_models
+from botbot.apps.plugins.utils import convert_nano_timestamp
+from botbot.apps.plugins.utils import log_on_error
 
 
 CACHE_TIMEOUT_2H = 7200
-LOG = logging.getLogger('botbot.plugin_runner')
+LOG = logging.getLogger("botbot.plugin_runner")
 
 
-class Router(object):
+class Router:
     """
     Custom Router object
     """
+
     def __init__(self, name):
         self.name = name
         self.plugins = {}
 
 
-class Line(object):
+class Line:
     """
     All the methods and data necessary for a plugin to act on a line
     """
+
     def __init__(self, packet, app):
-        self.full_text = packet['Content']
-        self.text = packet['Content']
-        self.user = packet['User']
+        self.full_text = packet["Content"]
+        self.text = packet["Content"]
+        self.user = packet["User"]
 
         # Private attributes not accessible to external plugins
-        self._chatbot_id = packet['ChatBotId']
-        self._raw = packet['Raw']
-        self._channel_name = packet['Channel'].strip()
-        self._command = packet['Command']
-        self._is_message = packet['Command'] == 'PRIVMSG'
-        self._host = packet['Host']
+        self._chatbot_id = packet["ChatBotId"]
+        self._raw = packet["Raw"]
+        self._channel_name = packet["Channel"].strip()
+        self._command = packet["Command"]
+        self._is_message = packet["Command"] == "PRIVMSG"
+        self._host = packet["Host"]
 
-        self._received = convert_nano_timestamp(packet['Received'])
+        self._received = convert_nano_timestamp(packet["Received"])
 
         self.is_direct_message = self.check_direct_message()
 
@@ -56,16 +59,14 @@ class Line(object):
     @property
     def _chatbot(self):
         """Simple caching for ChatBot model"""
-        if not hasattr(self, '_chatbot_cache'):
-            cache_key = f'chatbot:{self._chatbot_id}'
+        if not hasattr(self, "_chatbot_cache"):
+            cache_key = f"chatbot:{self._chatbot_id}"
             chatbot = cache.get(cache_key)
             if not chatbot:
                 try:
-                    chatbot = bots_models.ChatBot.objects.get(
-                        id=self._chatbot_id)
+                    chatbot = bots_models.ChatBot.objects.get(id=self._chatbot_id)
                 except bots_models.ChatBot.DoesNotExist:
-                    LOG.warn('Chatbot %s does not exist. Line dropped.',
-                             self._chatbot_id)
+                    LOG.warn("Chatbot %s does not exist. Line dropped.", self._chatbot_id)
                     return None
                 cache.set(cache_key, chatbot, CACHE_TIMEOUT_2H)
             self._chatbot_cache = chatbot
@@ -74,18 +75,19 @@ class Line(object):
     @property
     def _channel(self):
         """Simple caching for Channel model"""
-        if not hasattr(self, '_channel_cache'):
-            cache_key = f'channel:{self._chatbot_id}-{self._channel_name}'
+        if not hasattr(self, "_channel_cache"):
+            cache_key = f"channel:{self._chatbot_id}-{self._channel_name}"
             channel = cache.get(cache_key)
 
             if not channel and self._channel_name.startswith("#"):
                 try:
-                    channel = self._chatbot.channel_set.get(
-                        name=self._channel_name)
+                    channel = self._chatbot.channel_set.get(name=self._channel_name)
                 except self._chatbot.channel_set.model.DoesNotExist:
-                    LOG.warn('Chatbot %s should not be listening to %s. '
-                             'Line dropped.',
-                             self._chatbot_id, self._channel_name)
+                    LOG.warn(
+                        "Chatbot %s should not be listening to %s. " "Line dropped.",
+                        self._chatbot_id,
+                        self._channel_name,
+                    )
                     return None
                 cache.set(cache_key, channel, CACHE_TIMEOUT_2H)
 
@@ -97,14 +99,14 @@ class Line(object):
                 LOG.debug(channel)
                 LOG.debug(self._channel_name)
                 LOG.debug(cache_key)
-                LOG.debug("%s", ", ".join(self._chatbot.channel_set.values_list('name', flat=True)))
+                LOG.debug("%s", ", ".join(self._chatbot.channel_set.values_list("name", flat=True)))
 
             self._channel_cache = channel
         return self._channel_cache
 
     @property
     def _active_plugin_slugs(self):
-        if not hasattr(self, '_active_plugin_slugs_cache'):
+        if not hasattr(self, "_active_plugin_slugs_cache"):
             if self._channel:
                 self._active_plugin_slugs_cache = self._channel.active_plugin_slugs
             else:
@@ -121,7 +123,7 @@ class Line(object):
 
         # Private message
         if self._channel_name == nick:
-            LOG.debug('Private message detected')
+            LOG.debug("Private message detected")
             # Set channel as user, so plugins reply by PM to correct user
             self._channel_name = self.user
 
@@ -129,13 +131,13 @@ class Line(object):
 
         if len(nick) == 1:
             # support @<plugin> or !<plugin>
-            regex = fr'^{re.escape(nick)}(.*)'
+            regex = fr"^{re.escape(nick)}(.*)"
         else:
             # support <nick>: <plugin>
-            regex = fr'^{re.escape(nick)}[:\s](.*)'
+            regex = fr"^{re.escape(nick)}[:\s](.*)"
         match = re.match(regex, self.full_text, re.IGNORECASE)
         if match:
-            LOG.debug('Direct message detected')
+            LOG.debug("Direct message detected")
             self.text = match.groups()[0].lstrip()
             return True
         return False
@@ -147,7 +149,7 @@ class Line(object):
         return str(self)
 
 
-class PluginRunner(object):
+class PluginRunner:
     """
     Registration and routing for plugins
     Calls to plugins are done via greenlets
@@ -156,11 +158,10 @@ class PluginRunner(object):
     def __init__(self, use_gevent=False):
         if use_gevent:
             import gevent
+
             self.gevent = gevent
-        self.bot_bus = redis.StrictRedis.from_url(
-            settings.REDIS_PLUGIN_QUEUE_URL)
-        self.storage = redis.StrictRedis.from_url(
-            settings.REDIS_PLUGIN_STORAGE_URL)
+        self.bot_bus = redis.StrictRedis.from_url(settings.REDIS_PLUGIN_QUEUE_URL)
+        self.storage = redis.StrictRedis.from_url(settings.REDIS_PLUGIN_STORAGE_URL)
 
         self.command_prefix = settings.COMMAND_PREFIX
 
@@ -174,17 +175,17 @@ class PluginRunner(object):
             # plugins that only listen to certain commands
             "commands": Router("commands"),
             # plugins that only listen to certain commands with args parsed by regex
-            "regex_commands": Router("regex_commands")
+            "regex_commands": Router("regex_commands"),
         }
 
     def register_all_plugins(self):
         """Iterate over all plugins and register them with the app"""
-        for core_plugin in ['help', 'logger']:
-            mod = import_module(f'botbot.apps.plugins.core.{core_plugin}')
+        for core_plugin in ["help", "logger"]:
+            mod = import_module(f"botbot.apps.plugins.core.{core_plugin}")
             plugin = mod.Plugin()
             self.register(plugin)
         for mod in botbot_plugins.plugins.__all__:
-            plugin = import_module('botbot_plugins.plugins.' + mod).Plugin()
+            plugin = import_module("botbot_plugins.plugins." + mod).Plugin()
             self.register(plugin)
 
     def register(self, plugin):
@@ -200,51 +201,44 @@ class PluginRunner(object):
             except AttributeError:
                 continue
 
-            if not key.startswith('__') and getattr(attr, 'route_rule', None):
+            if not key.startswith("__") and getattr(attr, "route_rule", None):
                 router_name = attr.route_rule[0]
                 rule = attr.route_rule[1]
 
-                LOG.info('Route: %s.%s listens to %s for rule %s',
-                         plugin.slug, key, router_name, rule)
+                LOG.info("Route: %s.%s listens to %s for rule %s", plugin.slug, key, router_name, rule)
 
-                self.routers[router_name].plugins.setdefault(
-                    plugin.slug, []).append((rule, attr, plugin))
+                self.routers[router_name].plugins.setdefault(plugin.slug, []).append((rule, attr, plugin))
 
     def listen(self):
         """Listens for incoming messages on the Redis queue"""
         while 1:
             val = None
             try:
-                val = self.bot_bus.blpop('q', 1)
+                val = self.bot_bus.blpop("q", 1)
 
                 if val:
                     _, val = val
-                    LOG.debug('Received: %s', val)
+                    LOG.debug("Received: %s", val)
                     line = Line(json.loads(val), self)
 
                     if line.is_valid():
                         self.dispatch(line)
             except Exception:
-                LOG.error("Line Dispatch Failed", exc_info=True, extra={
-                    "line": val
-                })
+                LOG.error("Line Dispatch Failed", exc_info=True, extra={"line": val})
 
     def dispatch(self, line):
         """Given a line, dispatch it to the right plugins & functions."""
         # This is a pared down version of the `check_for_plugin_route_matches`
         # method for firehose plugins (no regexing or return values)
-        active_firehose_plugins = line._active_plugin_slugs.intersection(
-            self.routers["firehose"].plugins.keys())
+        active_firehose_plugins = line._active_plugin_slugs.intersection(self.routers["firehose"].plugins.keys())
         for plugin_slug in active_firehose_plugins:
             for _, func, plugin in self.routers["firehose"].plugins[plugin_slug]:
                 # firehose gets everything, no rule matching
-                LOG.info('Match: %s.%s', plugin_slug, func.__name__)
+                LOG.info("Match: %s.%s", plugin_slug, func.__name__)
 
-                channel_plugin = self.setup_plugin_for_channel(
-                    plugin.__class__, line)
-                new_func = log_on_error(LOG, getattr(channel_plugin,
-                                                     func.__name__))
-                if hasattr(self, 'gevent'):
+                channel_plugin = self.setup_plugin_for_channel(plugin.__class__, line)
+                new_func = log_on_error(LOG, getattr(channel_plugin, func.__name__))
+                if hasattr(self, "gevent"):
                     self.gevent.Greenlet.spawn(new_func, line)
                 else:
                     channel_plugin.respond(new_func(line))
@@ -262,12 +256,16 @@ class PluginRunner(object):
 
     def setup_plugin_for_channel(self, fake_plugin_class, line):
         """Given a dummy plugin class, initialize it for the line's channel"""
+
         class RealPlugin(RealPluginMixin, fake_plugin_class):
             pass
-        plugin = RealPlugin(slug=fake_plugin_class.__module__.split('.')[-1],
-                            channel=line._channel,
-                            chatbot_id=line._chatbot_id,
-                            app=self)
+
+        plugin = RealPlugin(
+            slug=fake_plugin_class.__module__.split(".")[-1],
+            channel=line._channel,
+            chatbot_id=line._chatbot_id,
+            app=self,
+        )
         return plugin
 
     def run_plugin(self, line, plugin, plugin_slug, func, arg_dict):
@@ -276,7 +274,7 @@ class PluginRunner(object):
         # get the method from the channel-specific plugin
         new_func = log_on_error(LOG, getattr(channel_plugin, func.__name__))
 
-        if hasattr(self, 'gevent'):
+        if hasattr(self, "gevent"):
             grnlt = self.gevent.Greenlet(new_func, line, **arg_dict)
             grnlt.link_value(channel_plugin.greenlet_respond)
             grnlt.start()
@@ -293,12 +291,10 @@ class PluginRunner(object):
                     cmd = rule
                     args = line.text.split()
                     if args[0] == self.command_prefix + cmd:
-                        LOG.info('Command: %s.%s', plugin_slug, func.__name__)
+                        LOG.info("Command: %s.%s", plugin_slug, func.__name__)
                         # We need a dict as run_plugin will unpack it
                         arg_dict = {"args": args[1:]}
-                        self.run_plugin(
-                          line, plugin, plugin_slug, func, arg_dict
-                        )
+                        self.run_plugin(line, plugin, plugin_slug, func, arg_dict)
 
                 elif router.name == "regex_commands":
                     cmd = rule[0]
@@ -308,19 +304,15 @@ class PluginRunner(object):
                         linetext = " ".join(args[1:])
                         match = re.match(regex, linetext, re.IGNORECASE)
                         if match:
-                            LOG.info('Command+Match: %s.%s', plugin_slug, func.__name__)
-                            self.run_plugin(
-                              line, plugin, plugin_slug, func, match.groupdict()
-                            )
+                            LOG.info("Command+Match: %s.%s", plugin_slug, func.__name__)
+                            self.run_plugin(line, plugin, plugin_slug, func, match.groupdict())
 
                 else:
                     regex = rule
                     match = re.match(regex, line.text, re.IGNORECASE)
                     if match:
-                        LOG.info('Match: %s.%s', plugin_slug, func.__name__)
-                        self.run_plugin(
-                            line, plugin, plugin_slug, func, match.groupdict()
-                        )
+                        LOG.info("Match: %s.%s", plugin_slug, func.__name__)
+                        self.run_plugin(line, plugin, plugin_slug, func, match.groupdict())
 
 
 def start_plugins(*args, **kwargs):
@@ -328,7 +320,7 @@ def start_plugins(*args, **kwargs):
     Used by the management command to start-up plugin listener
     and register the plugins.
     """
-    LOG.info('Starting plugins. Gevent=%s', kwargs['use_gevent'])
+    LOG.info("Starting plugins. Gevent=%s", kwargs["use_gevent"])
     app = PluginRunner(**kwargs)
     app.register_all_plugins()
     app.listen()

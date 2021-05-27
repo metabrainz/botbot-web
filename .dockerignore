@@ -4,6 +4,7 @@ docs/
 .env*
 .gitignore
 .jshintrc
+.pre-commit-config.yaml
 .pylintrc
 .travis.yml
 Dockerfile

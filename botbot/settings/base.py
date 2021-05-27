@@ -1,51 +1,47 @@
 import ast
 import os
-from django.conf.global_settings import MIDDLEWARE, AUTHENTICATION_BACKENDS
+
 import dj_database_url
+from django.conf.global_settings import AUTHENTICATION_BACKENDS
+from django.conf.global_settings import MIDDLEWARE
 
 # ==============================================================================
 # Generic Django project settings
 # ==============================================================================
 
-DEBUG = ast.literal_eval(os.environ.get('DEBUG', 'True'))
+DEBUG = ast.literal_eval(os.environ.get("DEBUG", "True"))
 
 SITE_ID = 1
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 USE_TZ = True
 USE_I18N = True
 USE_L10N = True
-LANGUAGE_CODE = 'en'
-LANGUAGES = (
-    ('en', 'English'),
-)
+LANGUAGE_CODE = "en"
+LANGUAGES = (("en", "English"),)
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ['WEB_SECRET_KEY']
-AUTH_USER_MODEL = 'accounts.User'
+SECRET_KEY = os.environ["WEB_SECRET_KEY"]
+AUTH_USER_MODEL = "accounts.User"
 INSTALLED_APPS = (
-    'botbot.apps.accounts',
-    'botbot.apps.bots',
-    'botbot.apps.logs',
-    'botbot.apps.plugins',
-    'botbot.core',
-
-    'pipeline',
-
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
-    'django.contrib.sitemaps',
-
-    'django_jsonfield_backport',
-
-    'bootstrap_toolkit',
+    "botbot.apps.accounts",
+    "botbot.apps.bots",
+    "botbot.apps.logs",
+    "botbot.apps.plugins",
+    "botbot.core",
+    "pipeline",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.sites",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.admin",
+    "django.contrib.admindocs",
+    "django.contrib.sitemaps",
+    "django_jsonfield_backport",
+    "bootstrap_toolkit",
 )
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
@@ -66,17 +62,16 @@ if "VAR_ROOT" in os.environ:
     VAR_ROOT = os.environ.get("VAR_ROOT")
 # Assume that the presence of 'activate_this.py' in the python bin/
 # directory means that we're running in a virtual environment.
-elif os.path.exists(os.path.join(PYTHON_BIN, 'activate_this.py')):
+elif os.path.exists(os.path.join(PYTHON_BIN, "activate_this.py")):
     # We're running with a virtualenv python executable.
-    VAR_ROOT = os.path.join(os.path.dirname(PYTHON_BIN), 'var')
-elif ve_path and os.path.exists(os.path.join(ve_path, 'bin',
-                                             'activate_this.py')):
+    VAR_ROOT = os.path.join(os.path.dirname(PYTHON_BIN), "var")
+elif ve_path and os.path.exists(os.path.join(ve_path, "bin", "activate_this.py")):
     # We're running in [virtualenv_root]/src/[project_name].
-    VAR_ROOT = os.path.join(ve_path, 'var')
+    VAR_ROOT = os.path.join(ve_path, "var")
 else:
     # Set the variable root to the local configuration location (which is
     # ignored by the repository).
-    VAR_ROOT = os.path.join(PROJECT_DIR, 'conf', 'local')
+    VAR_ROOT = os.path.join(PROJECT_DIR, "conf", "local")
 
 if not os.path.exists(VAR_ROOT):
     os.mkdir(VAR_ROOT)
@@ -85,59 +80,58 @@ if not os.path.exists(VAR_ROOT):
 # Project URLS and media settings
 # ==============================================================================
 
-ROOT_URLCONF = 'botbot.urls'
-INCLUDE_DJANGO_ADMIN = ast.literal_eval(os.environ.get(
-                                        'INCLUDE_DJANGO_ADMIN', 'True'))
+ROOT_URLCONF = "botbot.urls"
+INCLUDE_DJANGO_ADMIN = ast.literal_eval(os.environ.get("INCLUDE_DJANGO_ADMIN", "True"))
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/uploads/'
+STATIC_URL = "/static/"
+MEDIA_URL = "/uploads/"
 
-STATIC_ROOT = os.environ.get('STATIC_ROOT', os.path.join(VAR_ROOT, 'static'))
-MEDIA_ROOT = os.environ.get('MEDIA_ROOT', os.path.join(VAR_ROOT, 'uploads'))
+STATIC_ROOT = os.environ.get("STATIC_ROOT", os.path.join(VAR_ROOT, "static"))
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", os.path.join(VAR_ROOT, "uploads"))
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = "pipeline.storage.PipelineCachedStorage"
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'pipeline.finders.PipelineFinder',
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "pipeline.finders.PipelineFinder",
 )
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(PROJECT_DIR, "static"),)
 
 # Defines PIPELINE settings and bundles
 
-DATABASES = {'default': dj_database_url.config(env='STORAGE_URL')}
+DATABASES = {"default": dj_database_url.config(env="STORAGE_URL")}
 # Reuse database connections
-DATABASES['default'].update({
-    'CONN_MAX_AGE': None,
-    'ATOMIC_REQUESTS': True,
-    'OPTIONS': {"application_name": "django"},
-})
-GEOIP_CITY_DB_PATH = os.environ.get('GEOIP_CITY_DB_PATH',
-    os.path.join(VAR_ROOT, 'GeoLite2-City.mmdb'))
+DATABASES["default"].update(
+    {
+        "CONN_MAX_AGE": None,
+        "ATOMIC_REQUESTS": True,
+        "OPTIONS": {"application_name": "django"},
+    }
+)
+GEOIP_CITY_DB_PATH = os.environ.get("GEOIP_CITY_DB_PATH", os.path.join(VAR_ROOT, "GeoLite2-City.mmdb"))
 
 # ==============================================================================
 # Templates
 # ==============================================================================
 import pipeline
+
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [
-            os.path.join(PROJECT_DIR, 'templates'),
-            os.path.join(os.path.dirname(pipeline.__file__), 'templates'),
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        "DIRS": [
+            os.path.join(PROJECT_DIR, "templates"),
+            os.path.join(os.path.dirname(pipeline.__file__), "templates"),
         ],
-        'OPTIONS': {
-            'environment': 'botbot.jinja2.environment',
+        "OPTIONS": {
+            "environment": "botbot.jinja2.environment",
         },
     },
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': (
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": (
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.i18n",
@@ -147,31 +141,33 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.messages.context_processors.messages",
             ),
-            'debug': DEBUG,
-
+            "debug": DEBUG,
         },
     },
 ]
 # ==============================================================================
 # Middleware
 # ==============================================================================
-MIDDLEWARE = [
-    'django.contrib.sessions.middleware.SessionMiddleware',
-] + MIDDLEWARE + [
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'botbot.core.middleware.TimezoneMiddleware',
-]
+MIDDLEWARE = (
+    [
+        "django.contrib.sessions.middleware.SessionMiddleware",
+    ]
+    + MIDDLEWARE
+    + [
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+        "django.middleware.clickjacking.XFrameOptionsMiddleware",
+        "botbot.core.middleware.TimezoneMiddleware",
+    ]
+)
 
 # ==============================================================================
 # Auth / security
 # ============================================================================
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
 AUTHENTICATION_BACKENDS += (
-    'django.contrib.auth.backends.ModelBackend',
-
+    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
 )
@@ -181,62 +177,48 @@ AUTHENTICATION_BACKENDS += (
 # ==============================================================================
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+    "version": 1,
+    "disable_existing_loggers": True,
+    "formatters": {
+        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"},
+        "simple": {"format": "%(levelname)s %(message)s"},
+    },
+    "handlers": {
+        "null": {
+            "level": "DEBUG",
+            "class": "logging.NullHandler",
         },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
+        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "simple"},
+        "mail_admins": {"level": "ERROR", "class": "django.utils.log.AdminEmailHandler", "filters": []},
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["null"],
+            "propagate": True,
+            "level": "INFO",
+        },
+        "botbot": {
+            "handlers": ["console"],
+            "level": "INFO",
         },
     },
-    'handlers': {
-        'null': {
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'filters': []
-        }
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['null'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-        'botbot': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        }
-    }
 }
 
 # =============================================================================
 # Cache
 # =============================================================================
-if 'MEMCACHE_URL' in os.environ:
+if "MEMCACHE_URL" in os.environ:
     DEFAULT_CACHE = {
-        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-        'LOCATION': os.environ['MEMCACHE_URL'],
+        "BACKEND": "django.core.cache.backends.memcached.PyLibMCCache",
+        "LOCATION": os.environ["MEMCACHE_URL"],
     }
 else:
     DEFAULT_CACHE = {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'botbot',
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "botbot",
     }
 
-CACHES = {
-    'default': DEFAULT_CACHE
-}
+CACHES = {"default": DEFAULT_CACHE}
 
 CACHE_MIDDLEWARE_SECONDS = 600  # Unit is second
 
@@ -244,11 +226,9 @@ CACHE_MIDDLEWARE_SECONDS = 600  # Unit is second
 # Email
 # =============================================================================
 
-ADMINS = (
-    ('LL', 'info@lincolnloop.com'),
-)
+ADMINS = (("LL", "info@lincolnloop.com"),)
 EMAIL_SUBJECT_PREFIX = "[BBME] "
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # ==============================================================================
 # Miscellaneous project settings
@@ -257,16 +237,16 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Above this many users is considered a big channel, display is different
 BIG_CHANNEL = 25
 # Nicks requested to be excluded from logging
-EXCLUDE_NICKS = os.environ.get('EXCLUDE_NICKS', '').split(',')
-if EXCLUDE_NICKS == ['']:
+EXCLUDE_NICKS = os.environ.get("EXCLUDE_NICKS", "").split(",")
+if EXCLUDE_NICKS == [""]:
     EXCLUDE_NICKS = []
 
-REDIS_PLUGIN_QUEUE_URL = os.environ.get('REDIS_PLUGIN_QUEUE_URL')
-REDIS_PLUGIN_STORAGE_URL = os.environ.get('REDIS_PLUGIN_STORAGE_URL')
+REDIS_PLUGIN_QUEUE_URL = os.environ.get("REDIS_PLUGIN_QUEUE_URL")
+REDIS_PLUGIN_STORAGE_URL = os.environ.get("REDIS_PLUGIN_STORAGE_URL")
 
-COMMAND_PREFIX = os.environ.get('COMMAND_PREFIX')
+COMMAND_PREFIX = os.environ.get("COMMAND_PREFIX")
 
-PUSH_STREAM_URL = os.environ.get('PUSH_STREAM_URL', None)
+PUSH_STREAM_URL = os.environ.get("PUSH_STREAM_URL", None)
 
 # ==============================================================================
 # Third party app settings
@@ -275,24 +255,24 @@ PUSH_STREAM_URL = os.environ.get('PUSH_STREAM_URL', None)
 # SOUTH_DATABASE_ADAPTERS = {'default': 'south.db.postgresql_psycopg2'}
 
 SOCIAL_AUTH_USER_MODEL = AUTH_USER_MODEL
-SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email']
-SOCIAL_AUTH_DEFAULT_USERNAME = 'user'
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = ["email"]
+SOCIAL_AUTH_DEFAULT_USERNAME = "user"
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
-SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/accounts/manage/'
-SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/?error'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = "/accounts/manage/"
+SOCIAL_AUTH_LOGIN_ERROR_URL = "/accounts/login/?error"
 SOCIAL_AUTH_PIPELINE = (
-    'social.pipeline.social_auth.social_details',
-    'social.pipeline.social_auth.social_uid',
-    'social.pipeline.social_auth.auth_allowed',
-    'social.pipeline.social_auth.social_user',
+    "social.pipeline.social_auth.social_details",
+    "social.pipeline.social_auth.social_uid",
+    "social.pipeline.social_auth.auth_allowed",
+    "social.pipeline.social_auth.social_user",
     # 'social.pipeline.user.get_username',
     # 'social.pipeline.user.create_user',
-    'social.pipeline.social_auth.associate_by_email',
-    'social.pipeline.social_auth.load_extra_data',
-    'social.pipeline.user.user_details'
+    "social.pipeline.social_auth.associate_by_email",
+    "social.pipeline.social_auth.load_extra_data",
+    "social.pipeline.user.user_details",
 )
 
 # Allauth
 ACCOUNT_LOGOUT_ON_GET = True
 
-DJANGO_HSTORE_ADAPTER_REGISTRATION = 'connection'
+DJANGO_HSTORE_ADAPTER_REGISTRATION = "connection"

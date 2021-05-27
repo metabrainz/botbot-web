@@ -12,23 +12,20 @@ from botbot.apps.bots.sitemaps import ChannelSitemap
 
 class StaticSitemap(sitemaps.Sitemap):
     priority = 0.5
-    changefreq = 'monthly'
+    changefreq = "monthly"
 
     def items(self):
-        return ['terms', 'privacy', 'how-to', 'request_channel']
+        return ["terms", "privacy", "how-to", "request_channel"]
 
     def location(self, item):
         return reverse(item)
 
 
 sitemaps = {
-    'channels': ChannelSitemap,
-    'static': StaticSitemap,
+    "channels": ChannelSitemap,
+    "static": StaticSitemap,
 }
 
 urlpatterns = [
-    url(r'^$', cache_page(86400)(sitemap), {'sitemaps': sitemaps},
-        name='sitemap'),
+    url(r"^$", cache_page(86400)(sitemap), {"sitemaps": sitemaps}, name="sitemap"),
 ]
-
-

@@ -1,11 +1,12 @@
 from django.contrib import admin
+
 from . import models
 
 
 class ActivePluginAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'configuration')
-    list_filter = ('channel', 'plugin')
-    list_editable = ('configuration',)
+    list_display = ("__str__", "configuration")
+    list_filter = ("channel", "plugin")
+    list_editable = ("configuration",)
 
 
 admin.site.register(models.Plugin)

@@ -4,8 +4,7 @@ from botbot.apps.logs import models
 
 
 def _redact_logs_for_nick(nick):
-    redacted_count = models.Log.objects.filter(nick=nick).update(
-        text=models.REDACTED_TEXT)
+    redacted_count = models.Log.objects.filter(nick=nick).update(text=models.REDACTED_TEXT)
     return redacted_count
 
 
@@ -15,8 +14,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if len(args) != 1:
-            self.stderr.write(
-                "One argument (the nick to be redacted) is required.")
+            self.stderr.write("One argument (the nick to be redacted) is required.")
         nick = args[0]
         self.stdout.write(f"Redacting logs for '{nick}'")
         count = _redact_logs_for_nick(nick)

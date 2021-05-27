@@ -1,7 +1,8 @@
 # pylint: disable=W0212
-from botbot.apps.bots.utils import reverse_channel
 from botbot_plugins.base import BasePlugin
 from botbot_plugins.decorators import listens_to_mentions
+
+from botbot.apps.bots.utils import reverse_channel
 
 
 SITE = "https://botbot.me"
@@ -19,26 +20,24 @@ class Plugin(BasePlugin):
 
         {{ nick }}: help images
     """
-    @listens_to_mentions(r'^help$')
+
+    @listens_to_mentions(r"^help$")
     def respond_to_help(self, line):
         plugins = [plgn.slug for plgn in line._channel.plugins.all()]
         help_url = get_help_url(line._channel)
         return f'Available plugins: {", ".join(plugins)} ({help_url})'
 
-    @listens_to_mentions(r'^help (?P<command>.*)')
+    @listens_to_mentions(r"^help (?P<command>.*)")
     def respond_to_plugin_help(self, line, command):
         """Returns first line of docstring and link to more"""
         slug = command.strip()
         try:
             plugin = line._channel.plugins.filter(slug=slug)[0]
             help_url = get_help_url(line._channel)
-            response = [
-                plugin.user_docs.strip().split('\n')[0],
-                f'More details: {help_url}#{command}'
-            ]
-            return '\n'.join(response)
+            response = [plugin.user_docs.strip().split("\n")[0], f"More details: {help_url}#{command}"]
+            return "\n".join(response)
         except IndexError:
-            return 'Sorry, that plugin is not available.'
+            return "Sorry, that plugin is not available."
 
 
 def get_help_url(channel):

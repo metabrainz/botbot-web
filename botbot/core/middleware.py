@@ -6,7 +6,7 @@ class TimezoneMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        tz = request.session.get('django_timezone', "UTC") or "UTC"
+        tz = request.session.get("django_timezone", "UTC") or "UTC"
         timezone.activate(tz)
 
         response = self.get_response(request)
