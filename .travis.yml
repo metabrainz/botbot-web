@@ -1,16 +1,16 @@
 language: python
+os: linux
+dist: focal
 python:
   - "3.8"
 cache:
   directories:
-    - $HOME/.cache/pip
-    - $HOME/virtualenv
-sudo: false
+    - $HOME/.pipenv
 install:
-  - "export WOKON_HOME=.pipenv/venvs"
+  - "export WORKON_HOME=.pipenv/venvs"
   - "export PIP_CACHE_DIR=.pipenv/pipcache"
   - "pip install pipenv"
-  - "pipenv install --dev"
+  - "pipenv install"
 services:
   - postgresql
   - redis
