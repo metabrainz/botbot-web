@@ -4,9 +4,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+botbot-plugins = {editable = true, path = "./../brainzbot-plugins"}
+fakeredis = "*"
 
 [packages]
-django = "*"
+django = "<3.1"
 redis = "*"
 geoip2 = "*"
 requests = "*"
@@ -23,4 +25,4 @@ django-jinja = "*"
 slimit = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
