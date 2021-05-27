@@ -10,20 +10,20 @@ class CommandListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('ACTION', 'ACTION'),
-            ('ERROR', 'ERROR'),
-            ('JOIN', 'JOIN'),
-            ('KICK', 'KICK'),
-            ('MODE', 'MODE'),
-            ('NICK', 'NICK'),
-            ('NOTICE', 'NOTICE'),
-            ('PART', 'PART'),
-            ('PING', 'PING'),
-            ('PRIVMSG', 'PRIVMSG'),
-            ('QUIT', 'QUIT'),
-            ('SHUTDOWN', 'SHUTDOWN'),
-            ('TOPIC', 'TOPIC'),
-            ('VERSION', 'VERSION'),
+            ("ACTION", "ACTION"),
+            ("ERROR", "ERROR"),
+            ("JOIN", "JOIN"),
+            ("KICK", "KICK"),
+            ("MODE", "MODE"),
+            ("NICK", "NICK"),
+            ("NOTICE", "NOTICE"),
+            ("PART", "PART"),
+            ("PING", "PING"),
+            ("PRIVMSG", "PRIVMSG"),
+            ("QUIT", "QUIT"),
+            ("SHUTDOWN", "SHUTDOWN"),
+            ("TOPIC", "TOPIC"),
+            ("VERSION", "VERSION"),
         )
 
     def queryset(self, request, queryset):
@@ -31,8 +31,8 @@ class CommandListFilter(admin.SimpleListFilter):
 
 
 class LogAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__', 'command', 'bot', 'timestamp']
-    list_filter = ['bot', CommandListFilter]
+    list_display = ["__str__", "command", "bot", "timestamp"]
+    list_filter = ["bot", CommandListFilter]
     paginator = PostgresLargeTablePaginator
 
 

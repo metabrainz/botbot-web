@@ -1,0 +1,29 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+botbot-plugins = {editable = true, path = "./../brainzbot-plugins"}
+fakeredis = "*"
+
+[packages]
+django = "<3.1"
+redis = "*"
+geoip2 = "*"
+requests = "*"
+jinja2 = "*"
+django-allauth = "*"
+django-bootstrap-toolkit = "*" # Abandoned
+django-pipeline = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+gevent = "*"
+markdown = "*"
+djorm-ext-pgfulltext = "*" # Abandoned
+django-jinja = "*"
+slimit = "*"
+django-jsonfield-backport = "*"
+
+[requires]
+python_version = "3.9"

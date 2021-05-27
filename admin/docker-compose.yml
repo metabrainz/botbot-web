@@ -1,0 +1,54 @@
+version: "2.4"
+services:
+  db:
+    container_name: brainzbot-db
+    image: postgres
+    networks:
+      - brainzbot
+    ports:
+      - 5432:5432
+    env_file: docker-compose.env
+
+  redis:
+    container_name: brainzbot-redis
+    image: redis
+    networks:
+      - brainzbot
+    ports:
+      - 6379:6379
+
+  core:
+    container_name: brainzbot-core
+    image: metabrainz/brainzbot-core
+    networks:
+      - brainzbot
+      - default
+    ports:
+      - 8080:8080
+    env_file: docker-compose.env
+
+  bot:
+    container_name: brainzbot-bot
+    image: metabrainz/brainzbot-bot
+    networks:
+      - brainzbot
+      - default
+    env_file: docker-compose.env
+
+  plugins:
+    container_name: brainzbot-plugins
+    image: metabrainz/brainzbot-plugins
+    networks:
+      - brainzbot
+      - default # Some plugins require access to external services
+    env_file: docker-compose.env
+
+  ircd:
+    container_name: brainzbot-ircd
+    image: inspircd/inspircd-docker
+    ports:
+      - 6667:6667
+
+networks:
+  brainzbot:
+    name: brainzbot

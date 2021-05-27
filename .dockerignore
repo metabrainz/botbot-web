@@ -1,0 +1,15 @@
+admin/
+docs/
+.dockerignore
+.env*
+.gitignore
+.jshintrc
+.pre-commit-config.yaml
+.pylintrc
+.travis.yml
+Dockerfile
+LICENSE
+Makefile
+nginx.conf.example
+Procfile
+README.md

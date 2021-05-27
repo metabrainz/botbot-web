@@ -1,5 +1,7 @@
-from django.core.paginator import (Paginator, Page, PageNotAnInteger,
-                                   EmptyPage)
+from django.core.paginator import EmptyPage
+from django.core.paginator import Page
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import Paginator
 from django.db import connection
 
 
@@ -13,11 +15,9 @@ class InfinitePaginator(Paginator):
     template string for creating the links to the next and previous pages.
     """
 
-    def __init__(self, object_list, per_page, allow_empty_first_page=True,
-        link_template='/page/%d/', orphans=0):
-        orphans = 0 # no orphans
-        super(InfinitePaginator, self).__init__(object_list, per_page, orphans,
-            allow_empty_first_page)
+    def __init__(self, object_list, per_page, allow_empty_first_page=True, link_template="/page/%d/", orphans=0):
+        orphans = 0  # no orphans
+        super().__init__(object_list, per_page, orphans, allow_empty_first_page)
         # no count or num pages
         del self._num_pages, self._count
         # bonus links
@@ -30,9 +30,9 @@ class InfinitePaginator(Paginator):
         try:
             number = int(number)
         except ValueError:
-            raise PageNotAnInteger('That page number is not an integer')
+            raise PageNotAnInteger("That page number is not an integer")
         if number < 1:
-            raise EmptyPage('That page number is less than 1')
+            raise EmptyPage("That page number is less than 1")
         return number
 
     def page(self, number):
@@ -48,7 +48,7 @@ class InfinitePaginator(Paginator):
             if number == 1 and self.allow_empty_first_page:
                 pass
             else:
-                raise EmptyPage('That page contains no results')
+                raise EmptyPage("That page contains no results")
         return InfinitePage(page_items, number, self)
 
     def _get_count(self):
@@ -56,6 +56,7 @@ class InfinitePaginator(Paginator):
         Returns the total number of objects, across all pages.
         """
         raise NotImplementedError
+
     count = property(_get_count)
 
     def _get_num_pages(self):
@@ -63,6 +64,7 @@ class InfinitePaginator(Paginator):
         Returns the total number of pages.
         """
         raise NotImplementedError
+
     num_pages = property(_get_num_pages)
 
     def _get_page_range(self):
@@ -71,21 +73,20 @@ class InfinitePaginator(Paginator):
         a template for loop.
         """
         raise NotImplementedError
+
     page_range = property(_get_page_range)
 
 
 class InfinitePage(Page):
-
     def __repr__(self):
-        return '<Page %s>' % self.number
+        return "<Page %s>" % self.number
 
     def has_next(self):
         """
         Checks for one more item than last on this page.
         """
         try:
-            next_item = self.paginator.object_list[
-                self.number * self.paginator.per_page]
+            next_item = self.paginator.object_list[self.number * self.paginator.per_page]
         except IndexError:
             return False
         return True
@@ -95,10 +96,9 @@ class InfinitePage(Page):
         Returns the 1-based index of the last object on this page,
         relative to total objects found (hits).
         """
-        return ((self.number - 1) * self.paginator.per_page +
-            len(self.object_list))
+        return (self.number - 1) * self.paginator.per_page + len(self.object_list)
 
-    #Bonus methods for creating links
+    # Bonus methods for creating links
 
     def next_link(self):
         if self.has_next():
@@ -117,13 +117,15 @@ class PostgresLargeTablePaginator(Paginator):
     table. If the value is below 10,000 it will do a COUNT(*) on the table.
 
     Also if there is a where filter on the query it will use count()
+
+    See also https://medium.com/squad-engineering/estimated-counts-for-faster-django-admin-change-list-963cbf43683e
     """
 
     def _get_count(self):
         """
         Overwrite count to use custom logic of postgres.
         """
-        if self._count is None:
+        if not hasattr(self, "_count"):
             try:
                 estimate = 0
                 if not self.object_list.query.where:
@@ -131,7 +133,8 @@ class PostgresLargeTablePaginator(Paginator):
                         cursor = connection.cursor()
                         cursor.execute(
                             "SELECT reltuples FROM pg_class WHERE relname = %s",
-                            [self.object_list.query.model._meta.db_table])
+                            [self.object_list.query.model._meta.db_table],
+                        )
                         estimate = int(cursor.fetchone()[0])
                     except:
                         pass

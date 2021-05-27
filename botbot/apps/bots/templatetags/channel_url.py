@@ -8,7 +8,6 @@ register = template.Library()
 
 
 class ChannelURLNode(template.Node):
-
     def __init__(self, channel, view_name, args, kwargs):
         self.channel = channel
         self.view_name = view_name
@@ -20,11 +19,9 @@ class ChannelURLNode(template.Node):
         view_name = self.view_name.resolve(context)
 
         args = [arg.resolve(context) for arg in self.args]
-        kwargs = dict([(smart_str(k, 'ascii'), v.resolve(context))
-                       for k, v in self.kwargs.items()])
+        kwargs = {smart_str(k, "ascii"): v.resolve(context) for k, v in list(self.kwargs.items())}
 
-        return utils.reverse_channel(channel, view_name, args=args,
-            kwargs=kwargs, current_app=context.current_app)
+        return utils.reverse_channel(channel, view_name, args=args, kwargs=kwargs, current_app=context.current_app)
 
 
 @register.tag
@@ -32,8 +29,7 @@ def channel_url(parser, token):
     bits = token.split_contents()
 
     if len(bits) < 3:
-        raise template.TemplateSyntaxError("'%s' takes at least one argument"
-            " (channel and view name)" % bits[0])
+        raise template.TemplateSyntaxError("'%s' takes at least one argument" " (channel and view name)" % bits[0])
 
     channel = parser.compile_filter(bits[1])
     viewname = parser.compile_filter(bits[2])
@@ -46,8 +42,7 @@ def channel_url(parser, token):
         for bit in bits:
             match = kwarg_re.match(bit)
             if not match:
-                raise template.TemplateSyntaxError("Malformed arguments to "
-                    "url tag")
+                raise template.TemplateSyntaxError("Malformed arguments to " "url tag")
             name, value = match.groups()
             if name:
                 kwargs[name] = parser.compile_filter(value)
