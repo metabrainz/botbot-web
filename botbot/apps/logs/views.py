@@ -3,6 +3,7 @@ import json
 import math
 import random
 import re
+from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.humanize.templatetags import humanize
@@ -157,7 +158,7 @@ def _find_pk(pk, queryset):
     return found
 
 
-def _timeline_context(timeline):
+def _timeline_context(timeline: OrderedDict):
     """
     Context (template) vars needed for timeline display.
     """
@@ -171,7 +172,7 @@ def _timeline_context(timeline):
 
     # the last month in the timeline needs special treatment so it
     # doesn't get ordered ahead of the last/current weeks
-    last_month = timeline[timeline.keyOrder[-1]].pop()
+    last_month = timeline.popitem(last=True)[1][-1]
     if last_month >= last_week:
         last_month_adjusted = (last_week -
                                datetime.timedelta(days=1))
